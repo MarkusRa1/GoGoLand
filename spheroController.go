@@ -8,6 +8,7 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/platforms/sphero"
 	"runtime"
+	"os/exec"
 )
 
 
@@ -17,7 +18,7 @@ func main() {
 	var yaw int16 = 0
 
 	var adaptor *sphero.Adaptor
-	if(runtime.GOOS == "windows") {
+	if runtime.GOOS == "windows" {
 		adaptor = sphero.NewAdaptor("COM3")
 	} else {
 		adaptor = sphero.NewAdaptor("/dev/tty.Sphero-GWG-AMP-SPP")
@@ -57,4 +58,15 @@ func main() {
 
 	robot.Start()
 
+}
+
+func adaptorConnection() *sphero.Adaptor {
+	if runtime.GOOS == "windows" {
+		return sphero.NewAdaptor("COM3")
+	} else if runtime.GOOS == "darwin" {
+		 exec.Command("ls", "-a", "/dev", "|", "grep", "tty.Sphero").Output()
+		return sphero.NewAdaptor("/dev/tty.Sphero-GWG-AMP-SPP")
+	} else if runtime.GOOS == "linux" {
+		return sphero.NewAdaptor("/dev/")
+	}
 }
