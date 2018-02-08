@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"time"
-	_ "math"
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/platforms/sphero"
 	"runtime"
 	"os/exec"
+	"strings"
 )
 
 
@@ -17,13 +17,7 @@ func main() {
 	var pitch int16 = 0
 	var yaw int16 = 0
 
-	var adaptor *sphero.Adaptor
-	if runtime.GOOS == "windows" {
-		adaptor = sphero.NewAdaptor("COM3")
-	} else {
-		adaptor = sphero.NewAdaptor("/dev/tty.Sphero-GWG-AMP-SPP")
-	}
-	spheroDriver := sphero.NewSpheroDriver(adaptor)
+	adaptor, spheroDriver := getSphero()
 	spheroDriver.SetStabilization(false)
 
 	work := func() {
@@ -42,14 +36,14 @@ func main() {
 		work,
 	)
 
-	ticker := time.NewTicker(100000000*time.Nanosecond)
+	ticker := time.NewTicker(100000000 * time.Nanosecond)
 	quit := make(chan struct{})
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				fmt.Printf("%d %d %d\n", roll, pitch, yaw)
-			case <- quit:
+			case <-quit:
 				ticker.Stop()
 				return
 			}
@@ -59,14 +53,18 @@ func main() {
 	robot.Start()
 
 }
-
-func adaptorConnection() *sphero.Adaptor {
-	if runtime.GOOS == "windows" {
-		return sphero.NewAdaptor("COM3")
-	} else if runtime.GOOS == "darwin" {
-		 exec.Command("ls", "-a", "/dev", "|", "grep", "tty.Sphero").Output()
-		return sphero.NewAdaptor("/dev/tty.Sphero-GWG-AMP-SPP")
-	} else if runtime.GOOS == "linux" {
-		return sphero.NewAdaptor("/dev/")
+func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
+	var adaptor *sphero.Adaptor
+	switch runtime.GOOS {
+	case "windows":
+		adaptor = sphero.NewAdaptor("COM3")
+	case "darwin":
+		op, _ := exec.Command("/bin/sh", "./findspheromac.sh").Output()
+		adaptor = sphero.NewAdaptor("/dev/" + strings.TrimRight(string(op), "\n"))
+	default:
+		fmt.Println("OS not supported yet...")
+		adaptor = nil
 	}
+	spheroDriver := sphero.NewSpheroDriver(adaptor)
+	return adaptor, spheroDriver
 }
