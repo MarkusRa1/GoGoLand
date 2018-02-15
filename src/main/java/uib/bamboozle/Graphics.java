@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 
-public class Basic3DTest implements ApplicationListener {
+public class Graphics implements ApplicationListener {
     PerspectiveCamera cam;
     Environment environment;
     ModelBatch modelBatch;

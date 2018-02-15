@@ -9,6 +9,6 @@ public class Main {
       config.title = "GoGoLand";
       config.width = 1280;
       config.height = 800;
-      new LwjglApplication(new Basic3DTest(), config);
+      new LwjglApplication(new Graphics(), config);
    }
 }
