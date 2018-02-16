@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"os/exec"
 	"strings"
+	"os"
 )
 
 
@@ -16,6 +17,8 @@ func main() {
 	spheroDriver.SetStabilization(false)
 
 	work := func() {
+	    fmt.Printf("%d\n", os.Getpid());
+
 		spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
 
 		spheroDriver.On(sphero.SensorData, func(data interface{}) {
