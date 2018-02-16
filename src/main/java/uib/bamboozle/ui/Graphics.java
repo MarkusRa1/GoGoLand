@@ -1,4 +1,4 @@
-package uib.bamboozle;
+package uib.bamboozle.ui;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+
+import uib.bamboozle.Main;
 
 public class Graphics implements ApplicationListener {
     PerspectiveCamera cam;

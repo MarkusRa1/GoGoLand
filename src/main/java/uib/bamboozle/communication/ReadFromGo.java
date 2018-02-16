@@ -1,6 +1,8 @@
-package uib.bamboozle;
+package uib.bamboozle.communication;
 
 import org.lwjgl.openal.AL;
+
+import uib.bamboozle.Main;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
