@@ -23,23 +23,23 @@ public class ReadFromGo implements Runnable {
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.contains("error")) {
+                    System.out.println(line);
+                    System.out.println(in.readLine());
+                    System.out.println(in.readLine());
                     pr.destroy();
                     in.close();
                     break;
                 }
-                else if (line.matches("-?\\d+ -?\\d+ -\\d+")) {
+                else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
                     String[] coords = line.split(" ");
                     Main.roll = Integer.parseInt(coords[0]);
                     Main.pitch = Integer.parseInt(coords[1]);
                     Main.yaw = Integer.parseInt(coords[2]);
-
-                    //System.out.printf("%d # %d # %d\n", Main.roll, Main.pitch, Main.yaw);
                 }
                 else {
                     System.out.println(line);
                 }
             }
-            System.out.println("end");
 
         } catch (Exception e) {
             System.out.println(e);
