@@ -5,6 +5,7 @@ import (
 
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/platforms/sphero"
+	"os"
 	_ "os/exec"
 	"runtime"
 	_ "strings"
@@ -15,6 +16,8 @@ func main() {
 	spheroDriver.SetStabilization(false)
 
 	work := func() {
+		fmt.Printf("%d\n", os.Getpid())
+
 		spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
 
 		spheroDriver.On(sphero.SensorData, func(data interface{}) {
