@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Vector3;
 
 public class Graphics implements ApplicationListener {
     PerspectiveCamera cam;
@@ -41,6 +42,8 @@ public class Graphics implements ApplicationListener {
 
     @Override
     public void render () {
+        instance.transform.setFromEulerAngles(Main.yaw, Main.pitch, Main.roll);
+
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -53,6 +56,7 @@ public class Graphics implements ApplicationListener {
     public void dispose () {
         modelBatch.dispose();
         model.dispose();
+        Main.reader.stop();
     }
 
     @Override
