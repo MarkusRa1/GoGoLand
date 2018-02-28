@@ -44,7 +44,7 @@ public class Graphics implements ApplicationListener {
 
     @Override
     public void render () {
-        instance.transform.setFromEulerAngles(Main.yaw, Main.pitch, -Main.roll);
+        instance.transform.setFromEulerAngles(0, - (float) ((Main.pitch*Math.sin(Main.yaw*Math.PI/180)) + (-Main.roll*Math.cos(Main.yaw*Math.PI/180))), - (float) ((Main.pitch*Math.cos(Main.yaw*Math.PI/180)) + (-Main.roll*Math.sin(Main.yaw*Math.PI/180))));
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
