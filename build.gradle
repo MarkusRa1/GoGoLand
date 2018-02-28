@@ -27,7 +27,10 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-backend-lwjgl:1.9.6"
     compile "com.badlogicgames.gdx:gdx-platform:1.9.6:natives-desktop"
 
-    compile group: 'cz.advel.jbullet', name: 'jbullet', version: '20101010'
+//    compile group: 'cz.advel.jbullet', name: 'jbullet', version: '20101010'
+    compile "com.badlogicgames.gdx:gdx-bullet:1.9.6"
+    compile "com.badlogicgames.gdx:gdx-bullet-platform:1.9.6:natives-desktop"
+
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
