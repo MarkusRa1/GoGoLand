@@ -20,7 +20,10 @@ public class Graphics implements ApplicationListener {
     ModelBatch modelBatch;
     Model model;
     ModelInstance instance;
-
+    
+    public Graphics(Main game) {
+        
+    }
     @Override
     public void create () {
         environment = new Environment();
