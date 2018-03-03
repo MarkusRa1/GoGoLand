@@ -5,9 +5,6 @@ import uib.bamboozle.Main;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-/**
- * Created by Eirik on 15.02.2018.
- */
 public class ReadFromGo implements Runnable {
     public Process pr;
     public BufferedReader in;
