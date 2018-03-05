@@ -15,7 +15,13 @@ public class ReadFromGo implements Runnable {
 
     public void run() {
         try {
-            ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go");
+        		String s = "";
+        		if(System.getProperty("os.name").toLowerCase().startsWith("mac")) {
+        			Process p = Runtime.getRuntime().exec("./findspheromac.sh");
+        			s = new BufferedReader(new InputStreamReader(p.getInputStream())).readLine();
+        		}
+        			
+            ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", s);
             ps.redirectErrorStream(true);
 
             pr = ps.start();
