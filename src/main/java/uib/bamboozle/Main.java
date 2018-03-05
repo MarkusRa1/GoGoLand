@@ -6,9 +6,6 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import uib.bamboozle.communication.ReadFromGo;
 import uib.bamboozle.ui.Graphics;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 public class Main {
    public static float roll;
    public static float pitch;
