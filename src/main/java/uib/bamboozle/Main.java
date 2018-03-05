@@ -6,13 +6,10 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import uib.bamboozle.communication.ReadFromGo;
 import uib.bamboozle.ui.Graphics;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 public class Main {
-   public static int roll;
-   public static int pitch;
-   public static int yaw;
+   public static float roll;
+   public static float pitch;
+   public static float yaw;
    public static ReadFromGo reader;
 
    public static void main (String[] arg) {

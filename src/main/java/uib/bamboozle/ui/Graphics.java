@@ -2,62 +2,79 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes.*;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.bullet.Bullet;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
+import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
+import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
+import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
 import uib.bamboozle.Main;
 
 public class Graphics implements ApplicationListener {
-    PerspectiveCamera cam;
-    Environment environment;
-    ModelBatch modelBatch;
-    Model model;
-    ModelInstance instance;
+    private btDefaultCollisionConfiguration collisionConfig;
+    private btCollisionDispatcher dispatcher;
+    private btDiscreteDynamicsWorld dynamicsWorld;
+
+    private Level level;
 
     @Override
     public void create () {
-        environment = new Environment();
+        Bullet.init();
+
+        collisionConfig = new btDefaultCollisionConfiguration();
+        dispatcher = new btCollisionDispatcher(collisionConfig);
+        btDbvtBroadphase broadphase = new btDbvtBroadphase();
+        btSequentialImpulseConstraintSolver constraintSolver = new btSequentialImpulseConstraintSolver();
+        dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, constraintSolver, collisionConfig);
+        dynamicsWorld.setGravity(new Vector3(0, -10f, 0));
+
+        Environment environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
-        modelBatch = new ModelBatch();
-        cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(10f, 10f, 10f);
+        ModelBatch modelBatch = new ModelBatch();
+        PerspectiveCamera cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        cam.position.set(0f, 5f, -10f);
         cam.lookAt(0,0,0);
         cam.near = 1f;
         cam.far = 300f;
         cam.update();
 
-        ModelBuilder modelBuilder = new ModelBuilder();
-        model = modelBuilder.createBox(5f, 5f, 5f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-                Usage.Position | Usage.Normal);
-        instance = new ModelInstance(model);
+        level = new Level1(dynamicsWorld, cam, environment, modelBatch);
+        level.create();
     }
 
     @Override
     public void render () {
-        instance.transform.setFromEulerAngles(Main.yaw, Main.pitch, -Main.roll);
+        final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
+        dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        modelBatch.begin(cam);
-        modelBatch.render(instance, environment);
-        modelBatch.end();
+        GameObject cube = level.getCube();
+
+        cube.getInstance().transform.setFromEulerAngles(Main.yaw, Main.pitch, -Main.roll);
+        cube.getBody().setWorldTransform(cube.getInstance().transform);
+
+        level.render(delta);
     }
 
     @Override
     public void dispose () {
-        modelBatch.dispose();
-        model.dispose();
+        dispatcher.dispose();
+        collisionConfig.dispose();
+
+        level.dispose();
+
         Main.reader.stop();
     }
 
