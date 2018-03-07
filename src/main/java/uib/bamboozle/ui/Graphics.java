@@ -2,26 +2,32 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionDispatcher;
-import com.badlogic.gdx.physics.bullet.collision.btDbvtBroadphase;
-import com.badlogic.gdx.physics.bullet.collision.btDefaultCollisionConfiguration;
+import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
+import uib.bamboozle.Level;
+import uib.bamboozle.Level1;
 import uib.bamboozle.Main;
 
 public class Graphics implements ApplicationListener {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionDispatcher dispatcher;
     private btDiscreteDynamicsWorld dynamicsWorld;
+    private ModelFactory modelFactory;
 
     private Level level;
 
@@ -48,9 +54,11 @@ public class Graphics implements ApplicationListener {
         cam.far = 300f;
         cam.update();
 
+        modelFactory = createModels();
+
         Renderer renderer = new Renderer(cam, environment, modelBatch);
 
-        level = new Level1(dynamicsWorld, renderer);
+        level = new Level1(dynamicsWorld, renderer, modelFactory);
         level.create();
     }
 
@@ -76,8 +84,26 @@ public class Graphics implements ApplicationListener {
         collisionConfig.dispose();
 
         level.dispose();
+        modelFactory.dispose();
 
-        Main.reader.stop();
+        //Main.reader.stop();
+    }
+
+    private ModelFactory createModels() {
+        ModelBuilder modelBuilder = new ModelBuilder();
+        ModelFactory factory = new ModelFactory();
+
+        Model cubeModel = modelBuilder.createBox(10f, 1f, 10f,
+                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        factory.add("cube", cubeModel, new btBoxShape(new Vector3(5f, 0.5f, 5f)));
+
+        Model ballModel = modelBuilder.createSphere(2f, 2f, 2f, 24, 24,
+                new Material(ColorAttribute.createDiffuse(Color.ORANGE)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        factory.add("ball", ballModel, new btSphereShape(1f));
+
+        return factory;
     }
 
     @Override
