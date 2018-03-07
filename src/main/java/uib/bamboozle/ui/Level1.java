@@ -2,13 +2,10 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.VertexAttributes;
-import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
@@ -23,8 +20,8 @@ public class Level1 extends Level {
     private GameObject cube;
     private GameObject ball;
 
-    public Level1(btDiscreteDynamicsWorld dynamicsWorld, Camera cam, Environment environment, ModelBatch modelBatch) {
-        super(dynamicsWorld, cam, environment, modelBatch);
+    public Level1(btDiscreteDynamicsWorld dynamicsWorld, Renderer renderer) {
+        super(dynamicsWorld, renderer);
     }
 
     @Override
@@ -56,10 +53,6 @@ public class Level1 extends Level {
         }
 
         super.render(delta);
-    }
-
-    public GameObject getBall() {
-        return ball;
     }
 
     public GameObject getCube() {

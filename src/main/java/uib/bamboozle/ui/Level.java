@@ -1,8 +1,5 @@
 package uib.bamboozle.ui;
 
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 
 import java.util.HashSet;
@@ -10,26 +7,18 @@ import java.util.Set;
 
 public abstract class Level {
     private btDiscreteDynamicsWorld dynamicsWorld;
-    private Camera cam;
-    private Environment environment;
-    private ModelBatch modelBatch;
+    private Renderer renderer;
     private Set<GameObject> objects = new HashSet<>();
 
-    public Level(btDiscreteDynamicsWorld dynamicsWorld, Camera cam, Environment environment, ModelBatch modelBatch) {
+    public Level(btDiscreteDynamicsWorld dynamicsWorld, Renderer renderer) {
         this.dynamicsWorld = dynamicsWorld;
-        this.cam = cam;
-        this.environment = environment;
-        this.modelBatch = modelBatch;
+        this.renderer = renderer;
     }
 
     public void create() {}
 
     public void render(float delta) {
-        modelBatch.begin(cam);
-        for(GameObject object : this.objects) {
-            modelBatch.render(object.getInstance(), environment);
-        }
-        modelBatch.end();
+        renderer.render(objects);
     }
 
     public void dispose() {
@@ -37,7 +26,7 @@ public abstract class Level {
             object.dispose();
         }
 
-        modelBatch.dispose();
+        renderer.dispose();
     }
 
     public abstract GameObject getCube();

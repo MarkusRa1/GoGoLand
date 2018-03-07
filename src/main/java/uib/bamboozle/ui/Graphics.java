@@ -48,7 +48,9 @@ public class Graphics implements ApplicationListener {
         cam.far = 300f;
         cam.update();
 
-        level = new Level1(dynamicsWorld, cam, environment, modelBatch);
+        Renderer renderer = new Renderer(cam, environment, modelBatch);
+
+        level = new Level1(dynamicsWorld, renderer);
         level.create();
     }
 
