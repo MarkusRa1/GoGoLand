@@ -6,5 +6,5 @@ A INF219 project at University of Bergen
 - GoLang
 
 ## Installation Guide
-- ```$ go install gobot ```
+- ```$ go get -d -u gobot.io/x/gobot/... ```
 - ```$ gradle build ```
