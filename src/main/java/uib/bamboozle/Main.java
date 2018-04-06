@@ -35,8 +35,8 @@ public class Main extends com.badlogic.gdx.Game {
     public String getTitle() {
         return TITLE;
     }
-    public Graphics newGame() {
-        graphics = new Graphics(this);
-        return graphics;
-    }
+//    public Graphics newGame() {
+//        //graphics = new Graphics(this);
+//        return graphics;
+//    }
 }
