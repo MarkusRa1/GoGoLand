@@ -14,7 +14,7 @@ public class Main {
 
    public static void main (String[] arg) {
       reader = new ReadFromGo();
-      //new Thread(reader).start();
+      new Thread(reader).start();
 
       LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
       config.title = "GoGoLand";

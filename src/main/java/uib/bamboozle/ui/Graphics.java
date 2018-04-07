@@ -86,7 +86,7 @@ public class Graphics implements ApplicationListener {
         level.dispose();
         modelFactory.dispose();
 
-        //Main.reader.stop();
+        Main.reader.stop();
     }
 
     private ModelFactory createModels() {
