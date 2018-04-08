@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
+import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
@@ -93,10 +95,19 @@ public class Graphics implements ApplicationListener {
         ModelBuilder modelBuilder = new ModelBuilder();
         ModelFactory factory = new ModelFactory();
 
-        Model cubeModel = modelBuilder.createBox(10f, 1f, 10f,
-                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
-                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
-        factory.add("cube", cubeModel, new btBoxShape(new Vector3(5f, 0.5f, 5f)));
+        btCompoundShape cubeShape = new btCompoundShape();
+        cubeShape.addChildShape(new Matrix4(), new btBoxShape(new Vector3(5f, 0.5f, 5f)));
+        cubeShape.addChildShape(new Matrix4(new Vector3(3, 2, -3), new Quaternion(), new Vector3().add(1)), new btConeShape(1, 2));
+
+        modelBuilder.begin();
+        modelBuilder.node().translation.set(3, 2, -3);
+        modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
+                .cone(2f,2f,2f,16);
+
+        modelBuilder.node().translation.set(0, 0, 0);
+        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, new Material(ColorAttribute.createDiffuse(Color.RED)))
+                .box(10f,1f,10f);
+        factory.add("cube", modelBuilder.end(), cubeShape);
 
         Model ballModel = modelBuilder.createSphere(2f, 2f, 2f, 24, 24,
                 new Material(ColorAttribute.createDiffuse(Color.ORANGE)),
