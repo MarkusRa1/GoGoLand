@@ -18,26 +18,30 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MainMenu implements Screen {
-    private static final String PLAY = "resources/play1.png";
-    private static final String BACKGROUND = "resources/background.png";
-    private static final String EXIT = "Exit";
-    private static final String CONNECT = "Connect your balls";
+    private static final String PLAY = "resources/start.png";
+    private static final String BACKGROUND = "resources/bg2.jpg";
+    private static final String EXIT = "resources/bs_quit.png";
+    private static final String CONNECT = "resources/connect.png";
     
+    private Table table;
     
     private Stage stage;
     private Main game;
-    private Table menu;
+   
     
     public MainMenu(Main game) {
-        stage = new Stage(new FitViewport(1920, 1080));
         this.game = game;
-        menu = new Table();
+        stage = new Stage(new FitViewport(1920, 1080));
+        table = new Table();
         
-        
+        //background image
         setupBackground();
+        
         createButtons();
-        menu.setFillParent(true);
-        getStage().addActor(menu);;
+        //For å sjekke rammene til tablet
+        //table.setDebug(true);
+        table.setFillParent(true);
+        getStage().addActor(table);;
         
     }
     
@@ -46,6 +50,15 @@ public class MainMenu implements Screen {
         Image backgroundImage = new Image(backgroundTexture);
         getStage().addActor(backgroundImage);
     }
+    
+    public void exitGame() {
+		Gdx.app.exit();
+	}
+    //TODO Må Endre Graphics slik at den extender Screen
+    public void newGame() {
+        game.setScreen(game.newGame());
+    }
+
 
 
     private Stage getStage() {
@@ -57,11 +70,13 @@ public class MainMenu implements Screen {
         
         
         buttons.add(createButton(PLAY, this::newGame));
-        menu.pad(450, 1100, 0, 0);
-        menu.row();
+        buttons.add(createButton(CONNECT, this::exitGame));
+        buttons.add(createButton(EXIT, this::exitGame));
+        table.center();
+        table.row();
         for (Button but : buttons) {
-            menu.add(but).width((float) (but.getWidth() / 4)).height((float) (but.getHeight() / 4)).pad(5);
-            menu.row();
+            table.add(but).width((float) (but.getWidth() / 4)).height((float) (but.getHeight() / 4)).pad(5);
+            table.row();
         }
 
     }
@@ -97,10 +112,7 @@ public class MainMenu implements Screen {
         });
     }
 
-    //TODO Må Endre Graphics slik at den extender Screen
-    public void newGame() {
-        //game.setScreen(game.newGame());
-    }
+   
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);

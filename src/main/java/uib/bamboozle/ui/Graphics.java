@@ -2,19 +2,23 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes.*;
-import com.badlogic.gdx.graphics.g3d.*;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Vector3;
 
 import uib.bamboozle.Main;
 
-public class Graphics implements ApplicationListener {
+public class Graphics implements ApplicationListener, Screen {
     PerspectiveCamera cam;
     Environment environment;
     ModelBatch modelBatch;
@@ -75,4 +79,19 @@ public class Graphics implements ApplicationListener {
     @Override
     public void pause () {
     }
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void render(float delta) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void hide() {
+		// TODO Auto-generated method stub
+		
+	}
 }
