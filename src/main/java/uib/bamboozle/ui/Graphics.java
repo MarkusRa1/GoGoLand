@@ -3,10 +3,7 @@ package uib.bamboozle.ui;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -16,8 +13,6 @@ import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.*;
@@ -99,17 +94,17 @@ public class Graphics implements ApplicationListener {
         ModelFactory factory = new ModelFactory();
         ModelLoader loader = new ObjLoader();
 
-        btCompoundShape cubeShape = new btCompoundShape();
-        cubeShape.addChildShape(new Matrix4(), new btBoxShape(new Vector3(5f, 0.5f, 5f)));
-        cubeShape.addChildShape(new Matrix4(new Vector3(3, 1.5f, -3), new Quaternion(), new Vector3().add(1)), new btConeShape(1, 2));
-        cubeShape.addChildShape(new Matrix4(new Vector3(-3, 1.5f, -3), new Quaternion(), new Vector3().add(1)), new btBoxShape(new Vector3(0.3f, 2, 0.3f)));
-
         modelBuilder.begin();
-        modelBuilder.node().translation.set(3, 1.5f, -3);
+
+        Node node1 = modelBuilder.node();
+        node1.id = "cone";
+        node1.translation.set(3, 1.5f, -3);
         modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
                 .cone(2f,2f,2f,16);
 
-        modelBuilder.node().translation.set(0, 0, 0);
+        Node node2 = modelBuilder.node();
+        node2.id = "box";
+        node2.translation.set(0, 0, 0);
         modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, new Material(ColorAttribute.createDiffuse(Color.RED)))
                 .box(10f,1f,10f);
 
@@ -117,7 +112,7 @@ public class Graphics implements ApplicationListener {
         Model treeModel = loader.loadModel(Gdx.files.internal("LowPolyTree.obj"));
         modelBuilder.part("tree", treeModel.meshes.first(), GL20.GL_TRIANGLES, new Material(ColorAttribute.createDiffuse(Color.BLUE)));
 
-        factory.add("cube", modelBuilder.end(), cubeShape);
+        factory.add("cube", modelBuilder.end(), null);
 
         Model ballModel = modelBuilder.createSphere(2f, 2f, 2f, 24, 24,
                 new Material(ColorAttribute.createDiffuse(Color.ORANGE)),
