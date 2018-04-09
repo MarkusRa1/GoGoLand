@@ -44,7 +44,7 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 		adaptor = sphero.NewAdaptor("COM3")
 	case "darwin":
 		//op, _ := exec.Command("/bin/sh", "./findspheromac.sh").Output()
-		adaptor = sphero.NewAdaptor("/dev/" + "tty.Sphero-GWG-AMP-SPP" /*strings.TrimRight(string(op), "\n")*/)
+		adaptor = sphero.NewAdaptor("/dev/" + os.Args[1])
 	default:
 		fmt.Println("OS not supported yet...")
 		adaptor = nil
