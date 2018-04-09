@@ -28,11 +28,14 @@ public class Graphics implements ApplicationListener {
     private btCollisionDispatcher dispatcher;
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
+    private float tempRoll = Main.roll;
+    private float tempPitch = Main.pitch;
+    private float tempYaw = Main.yaw;
 
     private Level level;
 
     @Override
-    public void create () {
+    public void create() {
         Bullet.init();
 
         collisionConfig = new btDefaultCollisionConfiguration();
@@ -49,7 +52,7 @@ public class Graphics implements ApplicationListener {
         ModelBatch modelBatch = new ModelBatch();
         PerspectiveCamera cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(0f, 5f, -10f);
-        cam.lookAt(0,0,0);
+        cam.lookAt(0, 0, 0);
         cam.near = 1f;
         cam.far = 300f;
         cam.update();
@@ -63,7 +66,7 @@ public class Graphics implements ApplicationListener {
     }
 
     @Override
-    public void render () {
+    public void render() {
         final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
         dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
 
@@ -72,14 +75,26 @@ public class Graphics implements ApplicationListener {
 
         GameObject cube = level.getCube();
 
-        cube.getInstance().transform.setFromEulerAngles(Main.yaw, Main.pitch, -Main.roll);
+        tempRoll = gradualChangeToRollPitchOrYaw(tempRoll, Main.roll);
+        tempPitch = gradualChangeToRollPitchOrYaw(tempPitch, Main.pitch);
+        tempYaw = gradualChangeToRollPitchOrYaw(tempYaw, Main.yaw);
+
+        cube.getInstance().transform.setFromEulerAngles(tempYaw, tempPitch, -tempRoll);
         cube.getBody().setWorldTransform(cube.getInstance().transform);
 
         level.render(delta);
     }
 
+    private float gradualChangeToRollPitchOrYaw(float oldf, float newf) {
+        float diff = Math.abs(newf - oldf);
+        if (diff > 180)
+            return newf > oldf ? oldf - (360 - diff) / 4 : oldf + (360 - diff) / 4;
+        else
+            return newf > oldf ? oldf + diff / 4: oldf - diff / 4;
+    }
+
     @Override
-    public void dispose () {
+    public void dispose() {
         dispatcher.dispose();
         collisionConfig.dispose();
 
@@ -123,14 +138,14 @@ public class Graphics implements ApplicationListener {
     }
 
     @Override
-    public void resume () {
+    public void resume() {
     }
 
     @Override
-    public void resize (int width, int height) {
+    public void resize(int width, int height) {
     }
 
     @Override
-    public void pause () {
+    public void pause() {
     }
 }
