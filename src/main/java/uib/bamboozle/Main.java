@@ -12,7 +12,7 @@ public class Main extends com.badlogic.gdx.Game {
     
     //scenes
     private MainMenu mainMenu;
-    private Graphics graphics;
+    private Game game;
     
     public static int roll;
     public static int pitch;
@@ -39,8 +39,8 @@ public class Main extends com.badlogic.gdx.Game {
     public String getTitle() {
         return TITLE;
     }
-    public Graphics newGame() {
-        graphics = new Graphics(this);
-        return graphics;
+    public Game newGame() {
+        game = new Game();
+        return game;
     }
 }
