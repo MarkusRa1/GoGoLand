@@ -18,10 +18,10 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MainMenu implements Screen {
-    private static final String PLAY = "resources/start.png";
-    private static final String BACKGROUND = "resources/bg2.jpg";
-    private static final String EXIT = "resources/bs_quit.png";
-    private static final String CONNECT = "resources/connect.png";
+    private static final String PLAY = "start.png";
+    private static final String BACKGROUND = "bg2.jpg";
+    private static final String EXIT = "bs_quit.png";
+    private static final String CONNECT = "connect.png";
     
     private Table table;
     
@@ -33,12 +33,12 @@ public class MainMenu implements Screen {
         this.game = game;
         stage = new Stage(new FitViewport(1920, 1080));
         table = new Table();
-        
+
         //background image
         setupBackground();
-        
+
         createButtons();
-        //For å sjekke rammene til tablet
+        //For ï¿½ sjekke rammene til tablet
         //table.setDebug(true);
         table.setFillParent(true);
         getStage().addActor(table);;
@@ -54,12 +54,10 @@ public class MainMenu implements Screen {
     public void exitGame() {
 		Gdx.app.exit();
 	}
-    //TODO Må Endre Graphics slik at den extender Screen
+
     public void newGame() {
         game.setScreen(game.newGame());
     }
-
-
 
     private Stage getStage() {
         return stage;
@@ -67,11 +65,10 @@ public class MainMenu implements Screen {
 
     private void createButtons() {
         Array<Button> buttons = new Array<>();
-        
-        
-        buttons.add(createButton(PLAY, this::newGame));
-        buttons.add(createButton(CONNECT, this::exitGame));
-        buttons.add(createButton(EXIT, this::exitGame));
+
+        buttons.add(createButton(PLAY, "newGame"));
+        buttons.add(createButton(CONNECT, "exitGame"));
+        buttons.add(createButton(EXIT, "exitGame"));
         table.center();
         table.row();
         for (Button but : buttons) {
@@ -80,10 +77,10 @@ public class MainMenu implements Screen {
         }
 
     }
-    public ImageButton createButton(String imageString, Runnable lambda) {
+    public ImageButton createButton(String imageString, String target) {
         ImageButton button = setupButton(imageString);
-        if(lambda != null)
-            addButtonListener(button, lambda);
+        if(target != null)
+            addButtonListener(button, target);
         return button;
     }
     private ImageButton setupButton(String imageString) {
@@ -93,7 +90,9 @@ public class MainMenu implements Screen {
         return new ImageButton(myTexRegionDrawable);
     }
 
-    public void addButtonListener(Button button, Runnable lambda) {
+    public void addButtonListener(Button button, String target) {
+        MainMenu menu = this;
+
         button.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -106,7 +105,14 @@ public class MainMenu implements Screen {
                 Vector2 mouse = eventStage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
 
                 if (eventStage.hit(mouse.x, mouse.y, true) == event.getTarget()) {
-                    lambda.run();
+                    switch (target) {
+                        case "newGame":
+                            menu.newGame();
+                            break;
+                        case "exitGame":
+                            menu.exitGame();
+                            break;
+                    }
                 }
             }
         });

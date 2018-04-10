@@ -2,6 +2,7 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -23,7 +24,7 @@ import uib.bamboozle.Level;
 import uib.bamboozle.Level1;
 import uib.bamboozle.Main;
 
-public class Graphics implements ApplicationListener {
+public class Graphics implements Screen {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionDispatcher dispatcher;
     private btDiscreteDynamicsWorld dynamicsWorld;
@@ -34,8 +35,7 @@ public class Graphics implements ApplicationListener {
 
     private Level level;
 
-    @Override
-    public void create() {
+    public Graphics(Main main) {
         Bullet.init();
 
         collisionConfig = new btDefaultCollisionConfiguration();
@@ -66,8 +66,8 @@ public class Graphics implements ApplicationListener {
     }
 
     @Override
-    public void render() {
-        final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
+    public void render(float delta) {
+        //final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
         dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -151,12 +151,7 @@ public class Graphics implements ApplicationListener {
 	@Override
 	public void show() {
 		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void render(float delta) {
-		// TODO Auto-generated method stub
-		
+
 	}
 	@Override
 	public void hide() {

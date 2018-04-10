@@ -14,7 +14,6 @@ public class Main extends com.badlogic.gdx.Game {
     private MainMenu mainMenu;
     private Graphics graphics;
     
-    private SpriteBatch batch;
     public static int roll;
     public static int pitch;
     public static int yaw;
@@ -32,7 +31,6 @@ public class Main extends com.badlogic.gdx.Game {
     }
     public void create() {
         mainMenu = new MainMenu(this);
-        batch = new SpriteBatch();
         setScreen(mainMenu);
     }
     public MainMenu getMainMenu() {
