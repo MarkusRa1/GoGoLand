@@ -1,8 +1,6 @@
 package uib.bamboozle.ui;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -20,22 +18,14 @@ import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
-import uib.bamboozle.Level;
-import uib.bamboozle.Level1;
-import uib.bamboozle.Main;
-
-public class Graphics implements Screen {
+public class Graphics {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionDispatcher dispatcher;
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
-    private float tempRoll = Main.roll;
-    private float tempPitch = Main.pitch;
-    private float tempYaw = Main.yaw;
+    private Renderer renderer;
 
-    private Level level;
-
-    public Graphics(Main main) {
+    public Graphics() {
         Bullet.init();
 
         collisionConfig = new btDefaultCollisionConfiguration();
@@ -58,50 +48,20 @@ public class Graphics implements Screen {
         cam.update();
 
         modelFactory = createModels();
-
-        Renderer renderer = new Renderer(cam, environment, modelBatch);
-
-        level = new Level1(dynamicsWorld, renderer, modelFactory);
-        level.create();
+        renderer = new Renderer(cam, environment, modelBatch);
     }
 
-    @Override
     public void render(float delta) {
-        //final float delta = Math.min(1f / 30f, Gdx.graphics.getDeltaTime());
         dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
 
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
-        GameObject cube = level.getCube();
-
-        tempRoll = gradualChangeToRollPitchOrYaw(tempRoll, Main.roll);
-        tempPitch = gradualChangeToRollPitchOrYaw(tempPitch, Main.pitch);
-        tempYaw = gradualChangeToRollPitchOrYaw(tempYaw, Main.yaw);
-
-        cube.getInstance().transform.setFromEulerAngles(tempYaw, tempPitch, -tempRoll);
-        cube.getBody().setWorldTransform(cube.getInstance().transform);
-
-        level.render(delta);
     }
 
-    private float gradualChangeToRollPitchOrYaw(float oldf, float newf) {
-        float diff = Math.abs(newf - oldf);
-        if (diff > 180)
-            return newf > oldf ? oldf - (360 - diff) / 4 : oldf + (360 - diff) / 4;
-        else
-            return newf > oldf ? oldf + diff / 4: oldf - diff / 4;
-    }
-
-    @Override
     public void dispose() {
         dispatcher.dispose();
         collisionConfig.dispose();
-
-        level.dispose();
         modelFactory.dispose();
-
-        Main.reader.stop();
     }
 
     private ModelFactory createModels() {
@@ -137,25 +97,15 @@ public class Graphics implements Screen {
         return factory;
     }
 
-    @Override
-    public void resume() {
+    public btDiscreteDynamicsWorld getDynamicsWorld() {
+        return dynamicsWorld;
     }
 
-    @Override
-    public void resize(int width, int height) {
+    public Renderer getRenderer() {
+        return renderer;
     }
 
-    @Override
-    public void pause() {
+    public ModelFactory getModelBatch() {
+        return modelFactory;
     }
-	@Override
-	public void show() {
-		// TODO Auto-generated method stub
-
-	}
-	@Override
-	public void hide() {
-		// TODO Auto-generated method stub
-		
-	}
 }
