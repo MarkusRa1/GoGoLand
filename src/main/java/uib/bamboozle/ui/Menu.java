@@ -11,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-import uib.bamboozle.MainMenu;
-
 public class Menu {
     public ImageButton createButton(String imageString, String target, Menu menu) {
         ImageButton button = setupButton(imageString);

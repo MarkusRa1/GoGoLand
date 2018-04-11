@@ -4,6 +4,8 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import uib.bamboozle.communication.ReadFromGo;
+import uib.bamboozle.ui.GameScreen;
+import uib.bamboozle.ui.MainMenu;
 
 public class Game extends com.badlogic.gdx.Game {
     private static final String TITLE = "GOGOLAND";

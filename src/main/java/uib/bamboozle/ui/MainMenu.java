@@ -1,4 +1,4 @@
-package uib.bamboozle;
+package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import uib.bamboozle.ui.Menu;
+import uib.bamboozle.Game;
 
 public class MainMenu extends Menu implements Screen {
     private static final String PLAY = "start.png";

@@ -1,8 +1,10 @@
-package uib.bamboozle;
+package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Screen;
-import uib.bamboozle.ui.GameObject;
-import uib.bamboozle.ui.Graphics;
+
+import uib.bamboozle.Game;
+import uib.bamboozle.Level;
+import uib.bamboozle.Level1;
 
 public class GameScreen implements Screen {
     private Graphics graphics;
