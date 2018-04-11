@@ -1,9 +1,9 @@
 package uib.bamboozle.communication;
 
-import uib.bamboozle.Main;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+
+import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
     public Process pr;
@@ -32,9 +32,9 @@ public class ReadFromGo implements Runnable {
                 }
                 else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
                     String[] coords = line.split(" ");
-                    Main.roll = Integer.parseInt(coords[0]);
-                    Main.pitch = Integer.parseInt(coords[1]);
-                    Main.yaw = Integer.parseInt(coords[2]);
+                    Game.roll = Integer.parseInt(coords[0]);
+                    Game.pitch = Integer.parseInt(coords[1]);
+                    Game.yaw = Integer.parseInt(coords[2]);
                 }
                 else {
                     System.out.println(line);

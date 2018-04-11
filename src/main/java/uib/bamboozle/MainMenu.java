@@ -4,20 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class MainMenu implements Screen {
+import uib.bamboozle.ui.Menu;
+
+public class MainMenu extends Menu implements Screen {
     private static final String PLAY = "start.png";
     private static final String BACKGROUND = "bg2.jpg";
     private static final String EXIT = "bs_quit.png";
@@ -26,10 +22,10 @@ public class MainMenu implements Screen {
     private Table table;
     
     private Stage stage;
-    private Main game;
+    private Game game;
    
     
-    public MainMenu(Main game) {
+    public MainMenu(Game game) {
         this.game = game;
         stage = new Stage(new FitViewport(1920, 1080));
         table = new Table();
@@ -50,11 +46,11 @@ public class MainMenu implements Screen {
         Image backgroundImage = new Image(backgroundTexture);
         getStage().addActor(backgroundImage);
     }
-    
+    @Override
     public void exitGame() {
 		Gdx.app.exit();
 	}
-
+    @Override
     public void newGame() {
         game.setScreen(game.newGame());
     }
@@ -66,9 +62,9 @@ public class MainMenu implements Screen {
     private void createButtons() {
         Array<Button> buttons = new Array<>();
 
-        buttons.add(createButton(PLAY, "newGame"));
-        buttons.add(createButton(CONNECT, "exitGame"));
-        buttons.add(createButton(EXIT, "exitGame"));
+        buttons.add(createButton(PLAY, "newGame", this));
+        buttons.add(createButton(CONNECT, "exitGame", this));
+        buttons.add(createButton(EXIT, "exitGame", this));
         table.center();
         table.row();
         for (Button but : buttons) {
@@ -77,46 +73,9 @@ public class MainMenu implements Screen {
         }
 
     }
-    public ImageButton createButton(String imageString, String target) {
-        ImageButton button = setupButton(imageString);
-        if(target != null)
-            addButtonListener(button, target);
-        return button;
-    }
-    private ImageButton setupButton(String imageString) {
-        Texture myTexture = new Texture(Gdx.files.internal(imageString));
-        TextureRegion myTextureRegion = new TextureRegion(myTexture);
-        TextureRegionDrawable myTexRegionDrawable = new TextureRegionDrawable(myTextureRegion);
-        return new ImageButton(myTexRegionDrawable);
-    }
+    
 
-    public void addButtonListener(Button button, String target) {
-        MainMenu menu = this;
 
-        button.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Stage eventStage = event.getTarget().getStage();
-                Vector2 mouse = eventStage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-
-                if (eventStage.hit(mouse.x, mouse.y, true) == event.getTarget()) {
-                    switch (target) {
-                        case "newGame":
-                            menu.newGame();
-                            break;
-                        case "exitGame":
-                            menu.exitGame();
-                            break;
-                    }
-                }
-            }
-        });
-    }
 
    
     @Override
