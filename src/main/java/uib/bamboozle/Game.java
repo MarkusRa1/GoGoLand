@@ -1,77 +1,46 @@
 package uib.bamboozle;
 
-import com.badlogic.gdx.Screen;
-import uib.bamboozle.ui.GameObject;
-import uib.bamboozle.ui.Graphics;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
-public class Game implements Screen {
-    private Graphics graphics;
-    private Level level;
+import uib.bamboozle.communication.ReadFromGo;
+import uib.bamboozle.ui.GameScreen;
+import uib.bamboozle.ui.MainMenu;
 
-    private float tempRoll = Main.roll;
-    private float tempPitch = Main.pitch;
-    private float tempYaw = Main.yaw;
+public class Game extends com.badlogic.gdx.Game {
+    private static final String TITLE = "GOGOLAND";
+    
+    //scenes
+    private MainMenu mainMenu;
+    private GameScreen gameScreen;
+    
+    public static int roll;
+    public static int pitch;
+    public static int yaw;
+    public static ReadFromGo reader;
 
-    public Game() {
-        graphics = new Graphics();
-        level = new Level1(graphics.getDynamicsWorld(), graphics.getRenderer(), graphics.getModelBatch());
-        level.create();
+    public static void main(String[] arg) {
+        reader = new ReadFromGo();
+        new Thread(reader).start();
+        
+        LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+        config.title = "GoGoLand";
+        config.width = 1280;
+        config.height = 720;
+        new LwjglApplication(new Game(), config);
     }
-
-    @Override
-    public void render(float delta) {
-        graphics.render(delta);
-
-        GameObject cube = level.getCube();
-
-        tempRoll = gradualChangeToRollPitchOrYaw(tempRoll, Main.roll);
-        tempPitch = gradualChangeToRollPitchOrYaw(tempPitch, Main.pitch);
-        tempYaw = gradualChangeToRollPitchOrYaw(tempYaw, Main.yaw);
-
-        cube.getInstance().transform.setFromEulerAngles(tempYaw, tempPitch, -tempRoll);
-        cube.getBody().setWorldTransform(cube.getInstance().transform);
-
-        level.render(delta);
+    public void create() {
+        mainMenu = new MainMenu(this);
+        setScreen(mainMenu);
     }
-
-    @Override
-    public void dispose() {
-        graphics.dispose();
-        level.dispose();
-
-        Main.reader.stop();
+    public MainMenu getMainMenu() {
+        return mainMenu;
     }
-
-    private float gradualChangeToRollPitchOrYaw(float oldf, float newf) {
-        float diff = Math.abs(newf - oldf);
-        if (diff > 180)
-            return newf > oldf ? oldf - (360 - diff) / 4 : oldf + (360 - diff) / 4;
-        else
-            return newf > oldf ? oldf + diff / 4: oldf - diff / 4;
+    public String getTitle() {
+        return TITLE;
     }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void show() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
+    public GameScreen newGame() {
+        gameScreen = new GameScreen(this);
+        return gameScreen;
     }
 }
