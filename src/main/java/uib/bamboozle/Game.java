@@ -17,7 +17,7 @@ public class Game extends com.badlogic.gdx.Game {
     public static int yaw;
     public static ReadFromGo reader;
 
-    public static void Game(String[] arg) {
+    public static void main(String[] arg) {
         reader = new ReadFromGo();
         new Thread(reader).start();
         
