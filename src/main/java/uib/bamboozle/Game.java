@@ -14,14 +14,12 @@ public class Game extends com.badlogic.gdx.Game {
     private MainMenu mainMenu;
     private GameScreen gameScreen;
     
-    public static int roll;
-    public static int pitch;
-    public static int yaw;
-    public static ReadFromGo reader;
+    public int roll;
+    public int pitch;
+    public int yaw;
+    public ReadFromGo reader;
 
     public static void main(String[] arg) {
-        reader = new ReadFromGo();
-        new Thread(reader).start();
         
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "GoGoLand";
@@ -30,6 +28,7 @@ public class Game extends com.badlogic.gdx.Game {
         new LwjglApplication(new Game(), config);
     }
     public void create() {
+        //connect();
         mainMenu = new MainMenu(this);
         setScreen(mainMenu);
     }
@@ -42,5 +41,21 @@ public class Game extends com.badlogic.gdx.Game {
     public GameScreen newGame() {
         gameScreen = new GameScreen(this);
         return gameScreen;
+    }
+
+    public void connect() {
+        reader = new ReadFromGo(this);
+        new Thread(reader).start();
+    }
+
+    public void disconnect() {
+        if(reader != null) reader.stop();
+    }
+
+    @Override
+    public void dispose() {
+        disconnect();
+        if(gameScreen != null) gameScreen.dispose();
+        if(mainMenu != null)  mainMenu.dispose();
     }
 }

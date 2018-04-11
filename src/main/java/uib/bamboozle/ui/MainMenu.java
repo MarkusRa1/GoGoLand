@@ -54,6 +54,10 @@ public class MainMenu extends Menu implements Screen {
     public void newGame() {
         game.setScreen(game.newGame());
     }
+    @Override
+    public void connect() {
+        game.connect();
+    }
 
     private Stage getStage() {
         return stage;
@@ -63,7 +67,7 @@ public class MainMenu extends Menu implements Screen {
         Array<Button> buttons = new Array<>();
 
         buttons.add(createButton(PLAY, "newGame", this));
-        buttons.add(createButton(CONNECT, "exitGame", this));
+        buttons.add(createButton(CONNECT, "connect", this));
         buttons.add(createButton(EXIT, "exitGame", this));
         table.center();
         table.row();

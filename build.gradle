@@ -18,7 +18,7 @@ plugins {
 }
 
 // Define the main class for the application
-mainClassName = 'uib/bamboozle/Main'
+mainClassName = 'uib/bamboozle/Game'
 
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.

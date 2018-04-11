@@ -43,6 +43,9 @@ public class Menu {
                         case "newGame":
                             menu.newGame();
                             break;
+                        case "connect":
+                            menu.connect();
+                            break;
                         case "exitGame":
                             menu.exitGame();
                             break;
@@ -59,4 +62,5 @@ public class Menu {
         //todo
     }
 
+    public void connect() {}
 }

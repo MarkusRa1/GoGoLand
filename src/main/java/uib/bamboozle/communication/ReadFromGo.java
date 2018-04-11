@@ -9,6 +9,11 @@ public class ReadFromGo implements Runnable {
     public Process pr;
     public BufferedReader in;
     public int pid;
+    private Game game;
+
+    public ReadFromGo(Game game) {
+        this.game = game;
+    }
 
     public void run() {
         try {
@@ -32,9 +37,9 @@ public class ReadFromGo implements Runnable {
                 }
                 else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
                     String[] coords = line.split(" ");
-                    Game.roll = Integer.parseInt(coords[0]);
-                    Game.pitch = Integer.parseInt(coords[1]);
-                    Game.yaw = Integer.parseInt(coords[2]);
+                    game.roll = Integer.parseInt(coords[0]);
+                    game.pitch = Integer.parseInt(coords[1]);
+                    game.yaw = Integer.parseInt(coords[2]);
                 }
                 else {
                     System.out.println(line);
