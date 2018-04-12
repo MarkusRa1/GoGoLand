@@ -5,14 +5,16 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 
 import uib.bamboozle.communication.ReadFromGo;
 import uib.bamboozle.ui.GameScreen;
-import uib.bamboozle.ui.MainMenu;
+import uib.bamboozle.ui.MainMenuScreen;
+import uib.bamboozle.ui.PauseMenuScreen;
 
 public class Game extends com.badlogic.gdx.Game {
     private static final String TITLE = "GOGOLAND";
     
     //scenes
-    private MainMenu mainMenu;
+    private MainMenuScreen mainMenuScreen;
     private GameScreen gameScreen;
+    private PauseMenuScreen pauseMenuScreen;
     
     public static int roll;
     public static int pitch;
@@ -30,11 +32,18 @@ public class Game extends com.badlogic.gdx.Game {
         new LwjglApplication(new Game(), config);
     }
     public void create() {
-        mainMenu = new MainMenu(this);
-        setScreen(mainMenu);
+        mainMenuScreen = new MainMenuScreen(this);
+        pauseMenuScreen = new PauseMenuScreen(this);
+        setScreen(mainMenuScreen);
     }
-    public MainMenu getMainMenu() {
-        return mainMenu;
+    public MainMenuScreen getMainMenuScreen() {
+        return mainMenuScreen;
+    }
+    public PauseMenuScreen getPauseMenuScreen() {
+    	return pauseMenuScreen;
+    }
+    public GameScreen getGameScreen() {
+    	return gameScreen;
     }
     public String getTitle() {
         return TITLE;

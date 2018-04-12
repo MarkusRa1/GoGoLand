@@ -1,5 +1,7 @@
 package uib.bamboozle.ui;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 
 import uib.bamboozle.Game;
@@ -25,7 +27,7 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         graphics.render(delta);
-
+        checkForPauseRequest();
         GameObject cube = level.getCube();
 
         tempRoll = gradualChangeToRollPitchOrYaw(tempRoll, game.roll);
@@ -53,6 +55,14 @@ public class GameScreen implements Screen {
         else
             return newf > oldf ? oldf + diff / 4: oldf - diff / 4;
     }
+    private boolean checkForPauseRequest() {
+		final boolean pause = Gdx.input.isKeyJustPressed(Keys.ESCAPE);
+		if (pause) {
+			game.setScreen(game.getPauseMenuScreen());
+		}
+		return pause;
+	}
+
 
     @Override
     public void resize(int width, int height) {
