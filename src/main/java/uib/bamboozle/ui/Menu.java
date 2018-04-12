@@ -9,21 +9,30 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class Menu {
-    public ImageButton createButton(String imageString, String target, Menu menu) {
-        ImageButton button = setupButton(imageString);
+    protected ImageButton createButton(String imageString, String target, Menu menu) {
+        ImageButton button = new ImageButton(createImage(imageString));
         if(target != null)
             addButtonListener(button, target, menu);
         return button;
     }
-    private ImageButton setupButton(String imageString) {
+
+    protected ImageButton createButton(String upImage, String downImage, String checkedImage, String target, Menu menu) {
+        ImageButton button = new ImageButton(createImage(upImage), createImage(downImage), createImage(checkedImage));
+        if(target != null)
+            addButtonListener(button, target, menu);
+        return button;
+    }
+
+    protected Drawable createImage(String imageString) {
         Texture myTexture = new Texture(Gdx.files.internal(imageString));
         TextureRegion myTextureRegion = new TextureRegion(myTexture);
-        TextureRegionDrawable myTexRegionDrawable = new TextureRegionDrawable(myTextureRegion);
-        return new ImageButton(myTexRegionDrawable);
+        return new TextureRegionDrawable(myTextureRegion);
     }
+
     public <T> void addButtonListener(Button button, String target, Menu menu) {
         
 
@@ -46,6 +55,9 @@ public class Menu {
                         case "connect":
                             menu.connect();
                             break;
+                        case "disconnect":
+                            menu.disconnect();
+                            break;
                         case "exitGame":
                             menu.exitGame();
                             break;
@@ -63,4 +75,6 @@ public class Menu {
     }
 
     public void connect() {}
+
+    public void disconnect() {}
 }

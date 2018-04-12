@@ -19,6 +19,7 @@ public class Game extends com.badlogic.gdx.Game {
     public int yaw;
 
     private ReadFromGo reader;
+    private boolean connected = false;
 
     public static void main(String[] arg) {
         
@@ -52,6 +53,14 @@ public class Game extends com.badlogic.gdx.Game {
 
     public void disconnect() {
         if(reader != null) reader.stop();
+    }
+
+    public void setConnected(boolean c) {
+        this.connected = c;
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 
     @Override

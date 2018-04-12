@@ -30,7 +30,11 @@ public class ReadFromGo implements Runnable {
 
             in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
-            while ((line = in.readLine()) != null && !stop) {
+            while ((line = in.readLine()) != null) {
+                if(stop){
+                    return;
+                }
+
                 if (line.matches("\\d+")) {
                     pid = Integer.parseInt(line);
                 }
@@ -42,6 +46,7 @@ public class ReadFromGo implements Runnable {
                     break;
                 }
                 else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
+                    game.setConnected(true);
                     String[] coords = line.split(" ");
                     game.roll = Integer.parseInt(coords[0]);
                     game.pitch = Integer.parseInt(coords[1]);
@@ -69,5 +74,6 @@ public class ReadFromGo implements Runnable {
             System.out.println(e);
         }
         stop = true;
+        game.setConnected(false);
     }
 }
