@@ -10,13 +10,19 @@ import (
 	"strconv"
 	"gobot.io/x/gobot"
 	_ "strings"
+	"strings"
 )
 
 var stop = false
 var conn net.Conn = nil
+var spheroConnectedOrTrying = false
+var port string = "9001"
 
 func main() {
-
+	if len(os.Args) > 1 {
+		port = os.Args[1]
+	}
+	
 	fmt.Println("Launching server...")
 	tcpReady := make(chan bool)
 	go tcpConnect(tcpReady)
@@ -25,24 +31,24 @@ func main() {
 }
 
 func tcpConnect(tcpReady chan bool) {
-	// listen on all interfaces
-	ln, _ := net.Listen("tcp", ":9001")
-
-	// accept connection on port
+	ln, err1 := net.Listen("tcp", ":" + port)
+	if err1 != nil {
+		panic("omg")
+	}
 
 	conn, _ = ln.Accept()
-
-	// run loop forever (or until ctrl-c)
-
-	// will listen for message to process ending in newline (\n)
-	//message, err := bufio.NewReader(conn).ReadString('\n')
-	//if err != nil {
-	//	os.Exit(-1)
-	//}
+	message, err2 := bufio.NewReader(conn).ReadString('\n')
+	if(err2 != nil) {
+		fmt.Println(err2.Error())
+		panic("Connection error! :O");
+	}
+	if strings.Compare(message, "Hello Go Beep Boop\n") != 0 {
+		panic("Beep Boop who dis is:" + message)
+	}
+	conn.Write([]byte("Hello Java Beep Boop\n"))
 	tcpReady <- true
 	tcpReady <- true
-	// output message received
-	fmt.Print("Message Received:")
+	fmt.Println("Connection setup")
 }
 
 func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
@@ -62,27 +68,24 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 }
 
 func sendData(tcpReady chan bool) {
+	spheroConnectedOrTrying = true;
 	adaptor, spheroDriver := getSphero()
 	spheroDriver.SetStabilization(false)
 
 	work := func() {
-		fmt.Printf("%d\n", os.Getpid())
-
 		spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
 		<-tcpReady
-		fmt.Println("2")
+		fmt.Println("Starting to monitor...")
 		spheroDriver.On(sphero.SensorData, func(data interface{}) {
-			if stop {
-				os.Exit(1);
-			}
-
 			var roll int16 = data.(sphero.DataStreamingPacket).FiltRoll
 			var pitch int16 = data.(sphero.DataStreamingPacket).FiltPitch
 			var yaw int16 = data.(sphero.DataStreamingPacket).FiltYaw
 			d := strconv.Itoa(int(roll)) + " " + strconv.Itoa(int(pitch)) + " " + strconv.Itoa(int(yaw)) + "\n"
-			fmt.Print(d)
+			if stop {
+				os.Exit(1);
+			}
 			conn.Write([]byte(d))
-
+			//fmt.Print(d)
 		})
 	}
 
@@ -93,17 +96,22 @@ func sendData(tcpReady chan bool) {
 	)
 
 	robot.Start()
-
+	spheroConnectedOrTrying = false
 }
 
 func feedBack(tcpReady chan bool) {
 	<-tcpReady
-	fmt.Println("2")
 	for !stop {
-		_, err := bufio.NewReader(conn).ReadString('\n')
+		message, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
 			stop = true
+			conn.Close()
 			fmt.Println("Error received:", err.Error())
+		}
+
+		if strings.Compare(message, "Connect") == 0 && !spheroConnectedOrTrying {
+			go sendData(tcpReady)
+			tcpReady <- true
 		}
 	}
 }

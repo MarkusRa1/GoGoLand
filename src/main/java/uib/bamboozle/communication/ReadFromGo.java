@@ -4,79 +4,130 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.*;
 
 import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
-    public Process pr;
-    public BufferedReader in;
-    public int pid;
+    private boolean stop = false;
+    Socket clientSocket = null;
+    DataOutputStream outToServer = null;
+    private Game game;
+    private static final int MAX_PORT_NUMBER = 65535;
+    private static final int MIN_PORT_NUMBER = 0;
+
+    public ReadFromGo(Game game) {
+        this.game = game;
+    }
 
     public void run() {
+        game.readerIsRunning = true;
         try {
-            ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go");
-            ps.redirectErrorStream(true);
-
-            pr = ps.start();
-
-            in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line;
             getData(9001);
-
         } catch (Exception e) {
             System.out.println(e);
+        } finally {
+            game.readerIsRunning = false;
         }
     }
 
-    public boolean intepretData(String line) throws IOException {
+    public void intepretData(String line) {
         if (line.matches("\\d+")) {
-            pid = Integer.parseInt(line);
         }
         else if (line.contains("error")) {
             System.out.println(line);
-            System.out.println(in.readLine());
-            System.out.println(in.readLine());
             stop();
-            return true;
         }
         else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
             String[] coords = line.split(" ");
-            Game.roll = Integer.parseInt(coords[0]);
-            Game.pitch = Integer.parseInt(coords[1]);
-            Game.yaw = Integer.parseInt(coords[2]);
+            game.roll = Integer.parseInt(coords[0]);
+            game.pitch = Integer.parseInt(coords[1]);
+            game.yaw = Integer.parseInt(coords[2]);
         }
         else {
             System.out.println(line);
         }
-        return false;
     }
 
     public void getData(int port) throws IOException {
-        String sentence;
         String line;
-        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-        Socket clientSocket = new Socket("localhost", port);
-        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        clientSocket = new Socket("localhost", port);
+        outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        outToServer.writeBytes("Hello Go Beep Boop\n");
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        
-        while (true) {
-            line = inFromServer.readLine();
-            if (intepretData(line)) break;
 
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Callable<String> task = inFromServer::readLine;
+        Future<String> future = executor.submit(task);
+        try {
+            if (future.get(5, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0)
+                throw new IOException("Unknown server on port " + port);
+        } catch (TimeoutException ex) {
+            throw new IOException("Timeout when connected to server on port  " + port)
+        } catch (InterruptedException e) {
+            throw new IOException("Interrupted when connected to server on port " + port)
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+            throw new IOException("hmm");
         }
+        finally {
+            future.cancel(true); // may or may not desire this
+        }
+
+        System.out.println("Connected to Go on port " + port);
+
+        if (inFromServer.readLine().compareTo("Hello Java Beep Boop") != 0)
+            throw new IOException("Random server på port: " + port);
+
+        while (!stop) {
+            line = inFromServer.readLine();
+            intepretData(line);
+        }
+        clientSocket.close();
+    }
+
+    public static boolean available(int port) {
+        if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
+            throw new IllegalArgumentException("Invalid start port: " + port);
+        }
+
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } catch (IOException e) {
+        } finally {
+            if (ds != null) {
+                ds.close();
+            }
+
+            if (ss != null) {
+                try {
+                    ss.close();
+                } catch (IOException e) {
+                    /* should not be thrown */
+                }
+            }
+        }
+        return false;
     }
 
     public void stop() {
-        pr.destroy();
-        try{
-            if(System.getProperty("os.name").startsWith("Windows"))
-                Runtime.getRuntime().exec("taskkill /F /PID " + pid);
-            else
-                Runtime.getRuntime().exec("kill -9 " + pid);
-            in.close();
-        } catch(Exception e) {
-            System.out.println(e);
+        if (clientSocket != null && !clientSocket.isClosed()) {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        stop = true;
+        game.setConnected(false);
     }
 }
