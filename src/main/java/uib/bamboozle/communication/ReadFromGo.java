@@ -6,9 +6,11 @@ import java.io.InputStreamReader;
 import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
-    public Process pr;
-    public BufferedReader in;
-    public int pid;
+    private Process pr;
+    private BufferedReader in;
+    private int pid;
+    private boolean stop = false;
+
     private Game game;
 
     public ReadFromGo(Game game) {
@@ -28,7 +30,7 @@ public class ReadFromGo implements Runnable {
 
             in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
-            while ((line = in.readLine()) != null) {
+            while ((line = in.readLine()) != null && !stop) {
                 if (line.matches("\\d+")) {
                     pid = Integer.parseInt(line);
                 }
@@ -66,5 +68,6 @@ public class ReadFromGo implements Runnable {
         } catch(Exception e) {
             System.out.println(e);
         }
+        stop = true;
     }
 }

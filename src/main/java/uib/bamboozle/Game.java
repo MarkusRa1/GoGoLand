@@ -17,7 +17,8 @@ public class Game extends com.badlogic.gdx.Game {
     public int roll;
     public int pitch;
     public int yaw;
-    public ReadFromGo reader;
+
+    private ReadFromGo reader;
 
     public static void main(String[] arg) {
         
@@ -28,7 +29,7 @@ public class Game extends com.badlogic.gdx.Game {
         new LwjglApplication(new Game(), config);
     }
     public void create() {
-        //connect();
+        connect();
         mainMenu = new MainMenu(this);
         setScreen(mainMenu);
     }
@@ -44,6 +45,7 @@ public class Game extends com.badlogic.gdx.Game {
     }
 
     public void connect() {
+        disconnect();
         reader = new ReadFromGo(this);
         new Thread(reader).start();
     }
