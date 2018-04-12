@@ -73,11 +73,7 @@ public class MainMenu extends Menu implements Screen {
         }
 
     }
-    
-
-
-
-   
+       
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
