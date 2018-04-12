@@ -66,9 +66,9 @@ public class ReadFromGo implements Runnable {
             if (future.get(5, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0)
                 throw new IOException("Unknown server on port " + port);
         } catch (TimeoutException ex) {
-            throw new IOException("Timeout when connected to server on port  " + port)
+            throw new IOException("Timeout when connected to server on port  " + port);
         } catch (InterruptedException e) {
-            throw new IOException("Interrupted when connected to server on port " + port)
+            throw new IOException("Interrupted when connected to server on port " + port);
         } catch (ExecutionException e) {
             e.printStackTrace();
             throw new IOException("hmm");
