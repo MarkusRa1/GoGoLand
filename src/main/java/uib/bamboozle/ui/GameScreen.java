@@ -11,12 +11,16 @@ public class GameScreen implements Screen {
     private Level level;
     private Game game;
 
-    private float tempRoll = game.roll;
-    private float tempPitch = game.pitch;
-    private float tempYaw = game.yaw;
+    private float tempRoll;
+    private float tempPitch;
+    private float tempYaw;
     
     public GameScreen(Game game) {
         this.game = game;
+        tempRoll = game.roll;
+        tempPitch = game.pitch;
+        tempYaw = game.yaw;
+
         graphics = new Graphics();
         level = new Level1(graphics.getDynamicsWorld(), graphics.getRenderer(), graphics.getModelBatch());
         level.create();
@@ -42,8 +46,6 @@ public class GameScreen implements Screen {
     public void dispose() {
         graphics.dispose();
         level.dispose();
-
-        game.reader.stop();
     }
 
     private float gradualChangeToRollPitchOrYaw(float oldf, float newf) {
