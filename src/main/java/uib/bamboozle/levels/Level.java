@@ -1,4 +1,4 @@
-package uib.bamboozle;
+package uib.bamboozle.levels;
 
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.utils.Disposable;

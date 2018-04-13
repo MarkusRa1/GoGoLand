@@ -3,9 +3,9 @@ package uib.bamboozle.ui;
 import com.badlogic.gdx.Screen;
 
 import uib.bamboozle.Game;
-import uib.bamboozle.Level;
-import uib.bamboozle.Level1;
-import uib.bamboozle.Level2;
+import uib.bamboozle.levels.Level;
+import uib.bamboozle.levels.Level1;
+import uib.bamboozle.levels.Level2;
 
 public class GameScreen implements Screen {
     private Graphics graphics;
@@ -64,7 +64,6 @@ public class GameScreen implements Screen {
 
     private void nextLevel() {
         level = getLevel(++levelNum);
-        System.out.println(levelNum);
     }
 
     private Level getLevel(int num) {
