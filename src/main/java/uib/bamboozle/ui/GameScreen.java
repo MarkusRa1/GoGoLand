@@ -5,11 +5,14 @@ import com.badlogic.gdx.Screen;
 import uib.bamboozle.Game;
 import uib.bamboozle.Level;
 import uib.bamboozle.Level1;
+import uib.bamboozle.Level2;
 
 public class GameScreen implements Screen {
     private Graphics graphics;
     private Level level;
     private Game game;
+
+    private int levelNum = 0;
 
     private float tempRoll;
     private float tempPitch;
@@ -22,13 +25,16 @@ public class GameScreen implements Screen {
         tempYaw = game.yaw;
 
         graphics = new Graphics();
-        level = new Level1(graphics.getDynamicsWorld(), graphics.getRenderer(), graphics.getModelBatch());
-        level.create();
+        nextLevel();
     }
 
     @Override
     public void render(float delta) {
         graphics.render(delta);
+
+        if(level.isFinished()) {
+            nextLevel();
+        }
 
         GameObject cube = level.getCube();
 
@@ -54,6 +60,22 @@ public class GameScreen implements Screen {
             return newf > oldf ? oldf - (360 - diff) / 4 : oldf + (360 - diff) / 4;
         else
             return newf > oldf ? oldf + diff / 4: oldf - diff / 4;
+    }
+
+    private void nextLevel() {
+        level = getLevel(++levelNum);
+        System.out.println(levelNum);
+    }
+
+    private Level getLevel(int num) {
+        switch (num) {
+            case 1:
+                return new Level1(graphics);
+            case 2:
+                return new Level2(graphics);
+            default:
+                return null;
+        }
     }
 
     @Override

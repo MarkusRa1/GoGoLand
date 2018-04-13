@@ -7,11 +7,11 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import uib.bamboozle.ui.GameObject;
 import uib.bamboozle.ui.Graphics;
 
-public class Level1 extends Level {
+public class Level2 extends Level {
     private GameObject cube;
     private GameObject ball;
 
-    public Level1(Graphics graphics) {
+    public Level2(Graphics graphics) {
         super(graphics);
 
         cube = getModelFactory().get("cube", new Vector3(0f, 0f, 0f), 0f);
@@ -35,12 +35,7 @@ public class Level1 extends Level {
     }
 
     public boolean isFinished() {
-        if(ball != null) {
-            Vector3 pos = ball.getInstance().transform.getTranslation(new Vector3());
-            return pos.len() > 5;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     public GameObject getCube() {
