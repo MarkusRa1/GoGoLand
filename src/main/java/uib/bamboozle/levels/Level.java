@@ -1,8 +1,9 @@
-package uib.bamboozle;
+package uib.bamboozle.levels;
 
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.utils.Disposable;
 import uib.bamboozle.ui.GameObject;
+import uib.bamboozle.ui.Graphics;
 import uib.bamboozle.ui.ModelFactory;
 import uib.bamboozle.ui.Renderer;
 
@@ -15,13 +16,11 @@ public abstract class Level implements Disposable {
     private Set<GameObject> objects = new HashSet<>();
     private ModelFactory factory;
 
-    public Level(btDiscreteDynamicsWorld dynamicsWorld, Renderer renderer, ModelFactory factory) {
-        this.dynamicsWorld = dynamicsWorld;
-        this.renderer = renderer;
-        this.factory = factory;
+    public Level(Graphics graphics) {
+        this.dynamicsWorld = graphics.getDynamicsWorld();
+        this.renderer = graphics.getRenderer();
+        this.factory = graphics.getModelFactory();
     }
-
-    public void create() {}
 
     public void render(float delta) {
         renderer.render(objects);
@@ -52,4 +51,6 @@ public abstract class Level implements Disposable {
     protected ModelFactory getModelFactory() {
         return factory;
     }
+
+    public abstract boolean isFinished();
 }
