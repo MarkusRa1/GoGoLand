@@ -32,12 +32,12 @@ public class Game extends com.badlogic.gdx.Game {
         new LwjglApplication(new Game(), config);
     }
     public void create() {
+        connect();
 
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
-        setScreen(mainMenuScreen);
-        connect();
 
+        setScreen(mainMenuScreen);
     }
     public MainMenuScreen getMainMenuScreen() {
         return mainMenuScreen;

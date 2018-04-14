@@ -24,7 +24,6 @@ public abstract class Menu implements Screen {
     public Menu(Game game) {
     	this.game = game;
         stage = new Stage(new FitViewport(1920, 1080));
-        Gdx.input.setInputProcessor(stage);
     }
     @Override
     public void hide() {
@@ -80,9 +79,6 @@ public abstract class Menu implements Screen {
                         case "connect":
                             menu.connect();
                             break;
-                        case "disconnect":
-                            menu.disconnect();
-                            break;
                         case "exitGame":
                             menu.exitGame();
                             break;
@@ -97,6 +93,9 @@ public abstract class Menu implements Screen {
                 }
             }
         });
+    }
+    public Game getGame() {
+        return game;
     }
     public Stage getStage() {
         return stage;
@@ -115,6 +114,13 @@ public abstract class Menu implements Screen {
     public void exitToMainMenu() {
     	game.setScreen(game.getMainMenuScreen());
     }
+    public void connect() {
+        if(!game.isConnected()) {
+            game.connect();
+        } else {
+            game.disconnect();
+        }
+    }
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
@@ -125,8 +131,4 @@ public abstract class Menu implements Screen {
         // TODO Auto-generated method stub
         
     }
-
-    public void connect() {}
-
-    public void disconnect() {}
 }

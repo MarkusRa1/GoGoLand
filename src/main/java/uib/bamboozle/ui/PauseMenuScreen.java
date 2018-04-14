@@ -30,15 +30,15 @@ public class PauseMenuScreen extends Menu implements Screen {
     
     public PauseMenuScreen(Game game) {
         super(game);
-        
+
         table = new Table();
-        
+
         pauseButton = createButton(PAUSE, null, this);
         //background image
         buttons = new Array<Button>();
         buttons.add(createButton(EXIT, exit, this));
         buttons.add(createButton(RESUME, resume, this));
-        
+
         table.add(pauseButton).pad(0, 0, 20, 0);
 		table.row();
 		table.pad(50);
@@ -50,7 +50,7 @@ public class PauseMenuScreen extends Menu implements Screen {
 		table.setFillParent(true);
 		getStage().addActor(table);
 
-        
+
     }
 
     @Override
