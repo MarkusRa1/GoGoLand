@@ -32,7 +32,6 @@ public class Game extends com.badlogic.gdx.Game {
         new LwjglApplication(new Game(), config);
     }
     public void create() {
-
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
         setScreen(mainMenuScreen);
@@ -79,5 +78,6 @@ public class Game extends com.badlogic.gdx.Game {
         disconnect();
         if(gameScreen != null) gameScreen.dispose();
         if(mainMenuScreen != null)  mainMenuScreen.dispose();
+
     }
 }
