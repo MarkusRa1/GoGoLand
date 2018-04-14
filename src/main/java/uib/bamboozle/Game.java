@@ -33,7 +33,6 @@ public class Game extends com.badlogic.gdx.Game {
     }
     public void create() {
         connect();
-
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
 
@@ -79,5 +78,6 @@ public class Game extends com.badlogic.gdx.Game {
         disconnect();
         if(gameScreen != null) gameScreen.dispose();
         if(mainMenuScreen != null)  mainMenuScreen.dispose();
+
     }
 }

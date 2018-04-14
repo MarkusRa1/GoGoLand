@@ -5,10 +5,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+
 import com.badlogic.gdx.utils.Array;
 
 import uib.bamboozle.Game;
@@ -19,7 +23,7 @@ public class MainMenuScreen extends Menu implements Screen {
     private static final String EXIT = "bs_quit.png";
     private static final String CONNECT = "connect.png";
     private static final String DISCONNECT = "disconnect.png";
-    
+
     //Name for switch case methods
     private final String newGame = "newGame";
     private final String exit = "exitToMainMenu";
@@ -69,7 +73,9 @@ public class MainMenuScreen extends Menu implements Screen {
             table.add(but).width((float) (but.getWidth() / 4)).height((float) (but.getHeight() / 4)).pad(5);
             table.row();
         }
+
     }
+    
     @Override
     public void render(float delta) {
         if(getGame().isConnected()) {

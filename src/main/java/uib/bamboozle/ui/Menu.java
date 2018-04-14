@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+
 import uib.bamboozle.Game;
 
 public abstract class Menu implements Screen {
@@ -43,14 +44,12 @@ public abstract class Menu implements Screen {
             addButtonListener(button, target, menu);
         return button;
     }
-
     protected ImageButton createButton(String upImage, String downImage, String checkedImage, String target, Menu menu) {
         ImageButton button = new ImageButton(createImage(upImage), createImage(downImage), createImage(checkedImage));
         if(target != null)
             addButtonListener(button, target, menu);
         return button;
     }
-
     protected Drawable createImage(String imageString) {
         Texture myTexture = new Texture(Gdx.files.internal(imageString));
         TextureRegion myTextureRegion = new TextureRegion(myTexture);
