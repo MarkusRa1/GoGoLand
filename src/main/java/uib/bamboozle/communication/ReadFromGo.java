@@ -6,12 +6,23 @@ import java.io.InputStreamReader;
 import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
-    public Process pr;
-    public BufferedReader in;
-    public int pid;
+    private Process pr;
+    private BufferedReader in;
+    private int pid;
+    private boolean stop = false;
+
+    private Game game;
+
+    public ReadFromGo(Game game) {
+        this.game = game;
+    }
 
     public void run() {
         try {
+            if(System.getProperty("os.name").startsWith("Windows")) {
+                Runtime.getRuntime().exec("taskkill /F /IM spheroController.exe");
+            }
+
             ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go");
             ps.redirectErrorStream(true);
 
@@ -20,6 +31,10 @@ public class ReadFromGo implements Runnable {
             in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             while ((line = in.readLine()) != null) {
+                if(stop){
+                    return;
+                }
+
                 if (line.matches("\\d+")) {
                     pid = Integer.parseInt(line);
                 }
@@ -31,10 +46,11 @@ public class ReadFromGo implements Runnable {
                     break;
                 }
                 else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
+                    game.setConnected(true);
                     String[] coords = line.split(" ");
-                    Game.roll = Integer.parseInt(coords[0]);
-                    Game.pitch = Integer.parseInt(coords[1]);
-                    Game.yaw = Integer.parseInt(coords[2]);
+                    game.roll = Integer.parseInt(coords[0]);
+                    game.pitch = Integer.parseInt(coords[1]);
+                    game.yaw = Integer.parseInt(coords[2]);
                 }
                 else {
                     System.out.println(line);
@@ -57,5 +73,7 @@ public class ReadFromGo implements Runnable {
         } catch(Exception e) {
             System.out.println(e);
         }
+        stop = true;
+        game.setConnected(false);
     }
 }

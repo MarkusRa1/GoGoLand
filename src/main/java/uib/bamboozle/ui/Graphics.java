@@ -105,7 +105,7 @@ public class Graphics {
         return renderer;
     }
 
-    public ModelFactory getModelBatch() {
+    public ModelFactory getModelFactory() {
         return modelFactory;
     }
 }

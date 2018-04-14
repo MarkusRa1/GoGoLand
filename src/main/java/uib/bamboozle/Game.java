@@ -16,14 +16,14 @@ public class Game extends com.badlogic.gdx.Game {
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
     
-    public static int roll;
-    public static int pitch;
-    public static int yaw;
-    public static ReadFromGo reader;
+    public int roll;
+    public int pitch;
+    public int yaw;
+
+    private ReadFromGo reader;
+    private boolean connected = false;
 
     public static void main(String[] arg) {
-        reader = new ReadFromGo();
-        new Thread(reader).start();
         
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "GoGoLand";
@@ -32,9 +32,12 @@ public class Game extends com.badlogic.gdx.Game {
         new LwjglApplication(new Game(), config);
     }
     public void create() {
+
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
         setScreen(mainMenuScreen);
+        connect();
+
     }
     public MainMenuScreen getMainMenuScreen() {
         return mainMenuScreen;
@@ -51,5 +54,30 @@ public class Game extends com.badlogic.gdx.Game {
     public GameScreen newGame() {
         gameScreen = new GameScreen(this);
         return gameScreen;
+    }
+
+    public void connect() {
+        disconnect();
+        reader = new ReadFromGo(this);
+        new Thread(reader).start();
+    }
+
+    public void disconnect() {
+        if(reader != null) reader.stop();
+    }
+
+    public void setConnected(boolean c) {
+        this.connected = c;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    @Override
+    public void dispose() {
+        disconnect();
+        if(gameScreen != null) gameScreen.dispose();
+        if(mainMenuScreen != null)  mainMenuScreen.dispose();
     }
 }

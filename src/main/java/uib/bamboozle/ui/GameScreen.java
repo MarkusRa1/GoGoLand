@@ -5,29 +5,43 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 
 import uib.bamboozle.Game;
-import uib.bamboozle.Level;
-import uib.bamboozle.Level1;
+import uib.bamboozle.levels.Level;
+import uib.bamboozle.levels.Level1;
+import uib.bamboozle.levels.Level2;
 
 public class GameScreen implements Screen {
     private Graphics graphics;
     private Level level;
     private Game game;
 
-    private float tempRoll = game.roll;
-    private float tempPitch = game.pitch;
-    private float tempYaw = game.yaw;
+    private int levelNum = 0;
+
+    private float tempRoll;
+    private float tempPitch;
+    private float tempYaw;
     
     public GameScreen(Game game) {
         this.game = game;
+        tempRoll = game.roll;
+        tempPitch = game.pitch;
+        tempYaw = game.yaw;
+
         graphics = new Graphics();
-        level = new Level1(graphics.getDynamicsWorld(), graphics.getRenderer(), graphics.getModelBatch());
-        level.create();
+        nextLevel();
     }
 
     @Override
     public void render(float delta) {
         graphics.render(delta);
+
         checkForPauseRequest();
+
+
+        if(level.isFinished()) {
+            nextLevel();
+        }
+
+
         GameObject cube = level.getCube();
 
         tempRoll = gradualChangeToRollPitchOrYaw(tempRoll, game.roll);
@@ -44,8 +58,6 @@ public class GameScreen implements Screen {
     public void dispose() {
         graphics.dispose();
         level.dispose();
-
-        game.reader.stop();
     }
 
     private float gradualChangeToRollPitchOrYaw(float oldf, float newf) {
@@ -63,6 +75,21 @@ public class GameScreen implements Screen {
 		return pause;
 	}
 
+
+    private void nextLevel() {
+        level = getLevel(++levelNum);
+    }
+
+    private Level getLevel(int num) {
+        switch (num) {
+            case 1:
+                return new Level1(graphics);
+            case 2:
+                return new Level2(graphics);
+            default:
+                return null;
+        }
+    }
 
     @Override
     public void resize(int width, int height) {

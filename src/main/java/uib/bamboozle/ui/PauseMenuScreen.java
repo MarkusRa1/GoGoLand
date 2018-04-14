@@ -53,9 +53,6 @@ public class PauseMenuScreen extends Menu implements Screen {
         
     }
 
-
-
-
     @Override
 	public void render(float delta) {
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
