@@ -19,10 +19,6 @@ public class ReadFromGo implements Runnable {
 
     public void run() {
         try {
-            if(System.getProperty("os.name").startsWith("Windows")) {
-                Runtime.getRuntime().exec("taskkill /F /IM spheroController.exe");
-            }
-
             ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go");
             ps.redirectErrorStream(true);
 
