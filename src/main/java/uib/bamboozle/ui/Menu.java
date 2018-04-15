@@ -1,6 +1,7 @@
 package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -11,22 +12,44 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class Menu {
+
+import uib.bamboozle.Game;
+
+public abstract class Menu implements Screen {
+	
+	protected Stage stage;
+	protected Game game;
+
+    public Menu(Game game) {
+    	this.game = game;
+        stage = new Stage(new FitViewport(1920, 1080));
+    }
+    @Override
+    public void hide() {
+        Gdx.input.setInputProcessor(null);
+    }
+    @Override
+    public void show() {
+    	Gdx.input.setInputProcessor(stage);        
+    }
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+        
+    }
     protected ImageButton createButton(String imageString, String target, Menu menu) {
         ImageButton button = new ImageButton(createImage(imageString));
         if(target != null)
             addButtonListener(button, target, menu);
         return button;
     }
-
     protected ImageButton createButton(String upImage, String downImage, String checkedImage, String target, Menu menu) {
         ImageButton button = new ImageButton(createImage(upImage), createImage(downImage), createImage(checkedImage));
         if(target != null)
             addButtonListener(button, target, menu);
         return button;
     }
-
     protected Drawable createImage(String imageString) {
         Texture myTexture = new Texture(Gdx.files.internal(imageString));
         TextureRegion myTextureRegion = new TextureRegion(myTexture);
@@ -55,26 +78,56 @@ public class Menu {
                         case "connect":
                             menu.connect();
                             break;
-                        case "disconnect":
-                            menu.disconnect();
-                            break;
                         case "exitGame":
                             menu.exitGame();
                             break;
+                        case "resumeGame":
+                        	menu.resume();
+                        	break;
+                        case "exitToMainMenu":
+                        	menu.exitToMainMenu();
+                        	break;
+                        
                     }
                 }
             }
         });
     }
+    public Game getGame() {
+        return game;
+    }
+    public Stage getStage() {
+        return stage;
+    }
     public void exitGame() {
-        //todo
-    }
-
+		Gdx.app.exit();
+	}
     public void newGame() {
-        //todo
+        game.setScreen(game.newGame());
     }
-
-    public void connect() {}
-
-    public void disconnect() {}
+	@Override
+	public void resume() {
+		game.setScreen(game.getGameScreen());
+		
+	}
+    public void exitToMainMenu() {
+    	game.setScreen(game.getMainMenuScreen());
+    }
+    public void connect() {
+        if(!game.isConnected()) {
+            game.connect();
+        } else {
+            game.disconnect();
+        }
+    }
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
+        
+    }
 }
