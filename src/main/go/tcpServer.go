@@ -17,10 +17,14 @@ var stop = false
 var conn net.Conn = nil
 var spheroConnectedOrTrying = false
 var port string = "9001"
+var loop = true
+var lostConnection = false
+var ln net.Listener = nil
 
 func main() {
 	if len(os.Args) > 1 {
 		port = os.Args[1]
+		loop = false
 	}
 	
 	fmt.Println("Launching server...")
@@ -31,12 +35,17 @@ func main() {
 }
 
 func tcpConnect(tcpReady chan bool) {
-	ln, err1 := net.Listen("tcp", ":" + port)
-	if err1 != nil {
-		panic("omg")
+	if !lostConnection {
+		var err1 error = nil
+		ln, err1 = net.Listen("tcp", "127.0.0.1:" + port)
+		if err1 != nil {
+			panic("omg " + err1.Error())
+		}
+
 	}
 
 	conn, _ = ln.Accept()
+	fmt.Println("Ready for connection")
 	message, err2 := bufio.NewReader(conn).ReadString('\n')
 	if(err2 != nil) {
 		fmt.Println(err2.Error())
@@ -46,8 +55,10 @@ func tcpConnect(tcpReady chan bool) {
 		panic("Beep Boop who dis is:" + message)
 	}
 	conn.Write([]byte("Hello Java Beep Boop\n"))
-	tcpReady <- true
-	tcpReady <- true
+	if !lostConnection {
+		tcpReady <- true
+		tcpReady <- true
+	}
 	fmt.Println("Connection setup")
 }
 
@@ -84,8 +95,10 @@ func sendData(tcpReady chan bool) {
 			if stop {
 				os.Exit(1);
 			}
-			conn.Write([]byte(d))
-			//fmt.Print(d)
+			if !lostConnection {
+				conn.Write([]byte(d))
+			}
+			fmt.Print(d)
 		})
 	}
 
@@ -104,9 +117,16 @@ func feedBack(tcpReady chan bool) {
 	for !stop {
 		message, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
-			stop = true
-			conn.Close()
-			fmt.Println("Error received:", err.Error())
+			if loop {
+				lostConnection = true
+				fmt.Println("Reconnecting...")
+				tcpConnect(tcpReady)
+				lostConnection = false;
+			} else {
+				stop = true
+				conn.Close()
+				fmt.Println("Error received:", err.Error())
+			}
 		}
 
 		if strings.Compare(message, "Connect") == 0 && !spheroConnectedOrTrying {

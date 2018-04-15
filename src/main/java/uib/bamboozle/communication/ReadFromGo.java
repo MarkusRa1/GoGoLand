@@ -28,7 +28,8 @@ public class ReadFromGo implements Runnable {
         try {
             getData(9001);
         } catch (Exception e) {
-            System.out.println(e);
+            e.printStackTrace();
+            System.out.println("gggg");
         } finally {
             game.readerIsRunning = false;
         }
@@ -36,57 +37,104 @@ public class ReadFromGo implements Runnable {
 
     public void intepretData(String line) {
         if (line.matches("\\d+")) {
-        }
-        else if (line.contains("error")) {
+        } else if (line.contains("error")) {
             System.out.println(line);
             stop();
-        }
-        else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
+        } else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
             String[] coords = line.split(" ");
             game.roll = Integer.parseInt(coords[0]);
             game.pitch = Integer.parseInt(coords[1]);
             game.yaw = Integer.parseInt(coords[2]);
-        }
-        else {
+        } else {
             System.out.println(line);
         }
     }
 
     public void getData(int port) throws IOException {
         String line;
-        clientSocket = new Socket("localhost", port);
-        outToServer = new DataOutputStream(clientSocket.getOutputStream());
-        outToServer.writeBytes("Hello Go Beep Boop\n");
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-        ExecutorService executor = Executors.newCachedThreadPool();
-        Callable<String> task = inFromServer::readLine;
-        Future<String> future = executor.submit(task);
-        try {
-            if (future.get(5, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0)
-                throw new IOException("Unknown server on port " + port);
-        } catch (TimeoutException ex) {
-            throw new IOException("Timeout when connected to server on port  " + port);
-        } catch (InterruptedException e) {
-            throw new IOException("Interrupted when connected to server on port " + port);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-            throw new IOException("hmm");
-        }
-        finally {
-            future.cancel(true); // may or may not desire this
-        }
-
-        System.out.println("Connected to Go on port " + port);
-
-        if (inFromServer.readLine().compareTo("Hello Java Beep Boop") != 0)
-            throw new IOException("Random server på port: " + port);
+        BufferedReader inFromServer = connectTo(port);
 
         while (!stop) {
             line = inFromServer.readLine();
             intepretData(line);
         }
         clientSocket.close();
+    }
+
+    public BufferedReader connectTo(int preferredPort) {
+        boolean connected = false;
+        BufferedReader inFromServer = null;
+        Future<String> future = null;
+        Thread t;
+
+        while (!connected) {
+            try {
+                if (available(preferredPort)) {
+                    ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/tcpServer.go", "" + preferredPort);
+                    ps.redirectErrorStream(true);
+                    Process pr = ps.start();
+                    System.out.println("Started Go");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+                    Runnable task1 = new Runnable(){
+
+                        @Override
+                        public void run(){
+                            try {
+                                String line;
+                                while ((line = in.readLine()) != null) {
+                                    System.out.println(line);
+                                }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                System.out.println("dafuq");
+                            } finally {
+                                System.out.println("closing :S");
+                            }
+
+                        }
+                    };
+                    t = new Thread(task1);
+                    t.start();
+                } else {
+                    System.out.println("busy port " + preferredPort);
+                }
+
+                TimeUnit.SECONDS.sleep(1);
+                clientSocket = new Socket("localhost", preferredPort);
+                outToServer = new DataOutputStream(clientSocket.getOutputStream());
+                outToServer.writeBytes("Hello Go Beep Boop\n");
+                inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                ExecutorService executor = Executors.newCachedThreadPool();
+                future = executor.submit(inFromServer::readLine);
+                if (future.get(5, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0) {
+                    System.out.println("hmm");
+                    throw new IOException("Unknown server on port " + preferredPort);
+                } else {
+                    connected = true;
+                    System.out.println("Connected to Go on port " + preferredPort);
+                }
+            } catch (IOException e) {
+                connected = false;
+                System.out.println("wut io drit");
+            } catch (TimeoutException ex) {
+                System.out.println("Timeout when connected to server on port  " + preferredPort);
+                connected = false;
+            } catch (InterruptedException e) {
+                System.out.println("Interrupted when connected to server on port " + preferredPort);
+                connected = false;
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+                System.out.println("wut");
+                connected = false;
+            } finally {
+                if (future != null)
+                    future.cancel(true); // may or may not desire this
+                if (!connected)
+                    preferredPort = Math.max((preferredPort + 1) % 65535, 1024);
+            }
+        }
+        return inFromServer;
     }
 
     public static boolean available(int port) {
@@ -125,6 +173,7 @@ public class ReadFromGo implements Runnable {
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                System.out.println("fkmas");
             }
         }
         stop = true;
