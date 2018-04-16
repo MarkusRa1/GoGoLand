@@ -4,15 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-
 import com.badlogic.gdx.utils.Array;
 
 import uib.bamboozle.Game;
@@ -26,7 +21,7 @@ public class MainMenuScreen extends Menu implements Screen {
 
     //Name for switch case methods
     private final String newGame = "newGame";
-    private final String exit = "exitToMainMenu";
+    private final String exit = "exitGame";
     private final String connect = "connect";
     
     private Table table;
