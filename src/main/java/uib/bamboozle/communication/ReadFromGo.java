@@ -179,4 +179,12 @@ public class ReadFromGo implements Runnable {
         stop = true;
         game.setConnected(false);
     }
+
+    public void connect() {
+        try {
+            outToServer.writeBytes("Connect\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

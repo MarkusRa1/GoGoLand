@@ -2,6 +2,8 @@ package uib.bamboozle;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import uib.bamboozle.communication.ReadFromGo;
 import uib.bamboozle.ui.GameScreen;
@@ -20,6 +22,8 @@ public class Game extends com.badlogic.gdx.Game {
     public int pitch;
     public int yaw;
     public boolean readerIsRunning = false;
+    public SpriteBatch batch;
+    public BitmapFont font;
 
     private ReadFromGo reader;
     private boolean connected = false;
@@ -34,6 +38,8 @@ public class Game extends com.badlogic.gdx.Game {
     }
     public void create() {
         connect();
+        batch = new SpriteBatch();
+        font = new BitmapFont();
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
 
@@ -57,11 +63,16 @@ public class Game extends com.badlogic.gdx.Game {
     }
 
     public void connect() {
-        if(!readerIsRunning) {
-            disconnect();
+//        if(!readerIsRunning) {
+//            disconnect();
+//            reader = new ReadFromGo(this);
+//            new Thread(reader).start();
+//        }
+        if (reader == null) {
             reader = new ReadFromGo(this);
             new Thread(reader).start();
-        }
+        } else
+            reader.connect();
     }
 
     public void disconnect() {

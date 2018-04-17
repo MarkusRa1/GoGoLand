@@ -88,6 +88,9 @@ public class GameScreen implements Screen {
                 return null;
         }
     }
+    public int getLevelNumber() {
+    	return levelNum;
+    }
 
     @Override
     public void resize(int width, int height) {

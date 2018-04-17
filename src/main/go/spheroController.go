@@ -53,6 +53,8 @@ import (
 //
 //	robot.Start()
 //}
+
+
 func worker(finished chan bool) {
 	fmt.Println("Worker: Started")
 	time.Sleep(time.Second)

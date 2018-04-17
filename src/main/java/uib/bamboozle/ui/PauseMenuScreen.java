@@ -1,9 +1,13 @@
 package uib.bamboozle.ui;
 
+import javax.swing.text.View;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -19,7 +23,6 @@ public class PauseMenuScreen extends Menu implements Screen {
     //Name for switch case methods
     private final String resume = "resumeGame";
     private final String exit = "exitToMainMenu";
-    
     
 
     private Table table;
@@ -55,12 +58,17 @@ public class PauseMenuScreen extends Menu implements Screen {
 
     @Override
 	public void render(float delta) {
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
 			resume();
 			return;
 		}
-
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		game.batch.begin();
+		game.font.setColor(Color.WHITE);
+		game.font.draw(game.batch, "Current Level: " + game.getGameScreen().getLevelNumber(), 20, 700);
+		game.getGameScreen().getLevelNumber();
+		game.batch.end();
+		
         stage.act(delta);
         stage.draw();
 

@@ -11,37 +11,48 @@ import (
 	"gobot.io/x/gobot"
 	_ "strings"
 	"strings"
+	"regexp"
 )
 
 var stop = false
 var conn net.Conn = nil
 var spheroConnectedOrTrying = false
-var port string = "9001"
-var loop = true
+var port = "9001"
+var dontCloseWhenJavaClose = true
 var lostConnection = false
 var ln net.Listener = nil
+var tcpConnected = false
+var robot *gobot.Robot = nil
+var incomingCommand = make(chan SpheroCommand)
+var stopSpheroConnection = make(chan bool)
+var isMonitoring = false
+var reConnect = false
+var readyToRestartSpheroConnection = make(chan bool)
+
+type SpheroCommand struct {
+	name string
+	value int
+}
 
 func main() {
 	if len(os.Args) > 1 {
 		port = os.Args[1]
-		loop = false
+		dontCloseWhenJavaClose = false
 	}
 	
 	fmt.Println("Launching server...")
-	tcpReady := make(chan bool)
-	go tcpConnect(tcpReady)
-	go sendData(tcpReady)
-	feedBack(tcpReady)
+
+	go sendData()
+	tcpConnect()
 }
 
-func tcpConnect(tcpReady chan bool) {
+func tcpConnect() {
 	if !lostConnection {
 		var err1 error = nil
 		ln, err1 = net.Listen("tcp", "127.0.0.1:" + port)
 		if err1 != nil {
 			panic("omg " + err1.Error())
 		}
-
 	}
 
 	conn, _ = ln.Accept()
@@ -55,11 +66,9 @@ func tcpConnect(tcpReady chan bool) {
 		panic("Beep Boop who dis is:" + message)
 	}
 	conn.Write([]byte("Hello Java Beep Boop\n"))
-	if !lostConnection {
-		tcpReady <- true
-		tcpReady <- true
-	}
+	tcpConnected = true
 	fmt.Println("Connection setup")
+	feedBack()
 }
 
 func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
@@ -78,60 +87,105 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	return adaptor, spheroDriver
 }
 
-func sendData(tcpReady chan bool) {
-	spheroConnectedOrTrying = true;
-	adaptor, spheroDriver := getSphero()
-	spheroDriver.SetStabilization(false)
+func sendData() {
+	reConnect = true
+	var stopS = false
+	for reConnect && !stop && !stopS {
+		reConnect = false;
+		spheroConnectedOrTrying = true;
+		adaptor, spheroDriver := getSphero()
+		spheroDriver.SetStabilization(false)
 
-	work := func() {
-		spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
-		<-tcpReady
-		fmt.Println("Starting to monitor...")
-		spheroDriver.On(sphero.SensorData, func(data interface{}) {
-			var roll int16 = data.(sphero.DataStreamingPacket).FiltRoll
-			var pitch int16 = data.(sphero.DataStreamingPacket).FiltPitch
-			var yaw int16 = data.(sphero.DataStreamingPacket).FiltYaw
-			d := strconv.Itoa(int(roll)) + " " + strconv.Itoa(int(pitch)) + " " + strconv.Itoa(int(yaw)) + "\n"
-			if stop {
-				os.Exit(1);
+
+		work := func() {
+			spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
+			fmt.Println("Starting to monitor...")
+			spheroDriver.On(sphero.SensorData, func(data interface{}) {
+				var roll int16 = data.(sphero.DataStreamingPacket).FiltRoll
+				var pitch int16 = data.(sphero.DataStreamingPacket).FiltPitch
+				var yaw int16 = data.(sphero.DataStreamingPacket).FiltYaw
+				d := strconv.Itoa(int(roll)) + " " + strconv.Itoa(int(pitch)) + " " + strconv.Itoa(int(yaw)) + "\n"
+				if !lostConnection && tcpConnected && !stop {
+					conn.Write([]byte(d))
+				}
+				//fmt.Print(d)
+				if !isMonitoring {
+					isMonitoring = true
+				}
+			})
+
+			for !stop && !reConnect {
+				var c SpheroCommand
+				c = <-incomingCommand
+				switch c.name {
+				case "Connect":
+					reConnect = true
+					stopSpheroConnection<-true
+					break
+				case "Stop":
+					stop = true
+					break
+				}
 			}
-			if !lostConnection {
-				conn.Write([]byte(d))
+		}
+
+		robot = gobot.NewRobot("sphero",
+			[]gobot.Connection{adaptor},
+			[]gobot.Device{spheroDriver},
+			work,
+		)
+		robot.AutoRun = false
+		robot.Commander.Commands()
+		var tryToConnect bool = true
+		for tryToConnect && !stop {
+			sErr := robot.Start()
+			if sErr == nil {
+				tryToConnect = false
 			}
-			fmt.Print(d)
-		})
+		}
+
+		<-stopSpheroConnection
+		robot.Stop()
+		adaptor.Disconnect()
+		if reConnect {
+			readyToRestartSpheroConnection<-true
+		}
 	}
-
-	robot := gobot.NewRobot("sphero",
-		[]gobot.Connection{adaptor},
-		[]gobot.Device{spheroDriver},
-		work,
-	)
-
-	robot.Start()
 	spheroConnectedOrTrying = false
+	fmt.Println("Stopped sphero connection")
+
 }
 
-func feedBack(tcpReady chan bool) {
-	<-tcpReady
+func feedBack() {
+	_, ereg := regexp.Compile("\\w+ \\d*")
+	if ereg != nil {
+		fmt.Println("Regex error " + ereg.Error())
+	}
 	for !stop {
 		message, err := bufio.NewReader(conn).ReadString('\n')
 		if err != nil {
-			if loop {
+			if dontCloseWhenJavaClose {
 				lostConnection = true
-				fmt.Println("Reconnecting...")
-				tcpConnect(tcpReady)
+				tcpConnected = false
+				fmt.Println("Reconnecting Application...")
+				tcpConnect()
 				lostConnection = false;
 			} else {
 				stop = true
-				conn.Close()
 				fmt.Println("Error received:", err.Error())
 			}
 		}
 
-		if strings.Compare(message, "Connect") == 0 && !spheroConnectedOrTrying {
-			go sendData(tcpReady)
-			tcpReady <- true
+		fmt.Println(message)
+		if strings.Compare(message, "Connect\n") == 0 {
+			fmt.Println("sweet connect")
+			if spheroConnectedOrTrying {
+				incomingCommand<-SpheroCommand{"Connect", 0}
+				<-readyToRestartSpheroConnection
+				fmt.Println("hmm")
+			}
+			go sendData()
 		}
 	}
 }
+
