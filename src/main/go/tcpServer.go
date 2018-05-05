@@ -15,7 +15,8 @@ import (
 )
 
 var stop = false
-var conn net.Conn = nil
+var tcpconn net.Conn = nil
+var udpconn net.Conn = nil
 var spheroConnectedOrTrying = false
 var port = "9001"
 var dontCloseWhenJavaClose = true
@@ -55,19 +56,21 @@ func tcpConnect() {
 		}
 	}
 
-	conn, _ = ln.Accept()
+	tcpconn, _ = ln.Accept()
 	fmt.Println("Ready for connection")
-	message, err2 := bufio.NewReader(conn).ReadString('\n')
+	message, err2 := bufio.NewReader(tcpconn).ReadString('\n')
 	if(err2 != nil) {
 		fmt.Println(err2.Error())
 		panic("Connection error! :O");
 	}
 	if strings.Compare(message, "Hello Go Beep Boop\n") != 0 {
-		panic("Beep Boop who dis is:" + message)
+		panic("Beep Boop who dis is: " + message)
 	}
-	conn.Write([]byte("Hello Java Beep Boop\n"))
+	tcpconn.Write([]byte("Hello Java Beep Boop\n"))
+	udpconn, _ = net.Dial("udp", "127.0.0.1:" + port)
 	tcpConnected = true
 	fmt.Println("Connection setup")
+	lostConnection = false
 	feedBack()
 }
 
@@ -89,13 +92,11 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 
 func sendData() {
 	reConnect = true
-	var stopS = false
-	for reConnect && !stop && !stopS {
+	for reConnect && !stop {
 		reConnect = false;
 		spheroConnectedOrTrying = true;
 		adaptor, spheroDriver := getSphero()
 		spheroDriver.SetStabilization(false)
-
 
 		work := func() {
 			spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
@@ -106,9 +107,10 @@ func sendData() {
 				var yaw int16 = data.(sphero.DataStreamingPacket).FiltYaw
 				d := strconv.Itoa(int(roll)) + " " + strconv.Itoa(int(pitch)) + " " + strconv.Itoa(int(yaw)) + "\n"
 				if !lostConnection && tcpConnected && !stop {
-					conn.Write([]byte(d))
+					udpconn.Write([]byte(d))
+					fmt.Println(d)
 				}
-				//fmt.Print(d)
+
 				if !isMonitoring {
 					isMonitoring = true
 				}
@@ -124,6 +126,7 @@ func sendData() {
 					break
 				case "Stop":
 					stop = true
+					stopSpheroConnection<-true
 					break
 				}
 			}
@@ -162,7 +165,7 @@ func feedBack() {
 		fmt.Println("Regex error " + ereg.Error())
 	}
 	for !stop {
-		message, err := bufio.NewReader(conn).ReadString('\n')
+		message, err := bufio.NewReader(tcpconn).ReadString('\n')
 		if err != nil {
 			if dontCloseWhenJavaClose {
 				lostConnection = true

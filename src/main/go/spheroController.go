@@ -23,10 +23,10 @@ import (
 //	return adaptor, spheroDriver
 //}
 //
-//func sendData(conn net.Conn) {
+//func sendData(tcpconn net.Conn) {
 //	adaptor, spheroDriver := getSphero()
 //	if adaptor == nil {
-//		conn.Write([]byte("Err 0\n"))
+//		tcpconn.Write([]byte("Err 0\n"))
 //	}
 //	spheroDriver.SetStabilization(false)
 //
@@ -41,7 +41,7 @@ import (
 //			var yaw int16 = data.(sphero.DataStreamingPacket).FiltYaw
 //			d := strconv.Itoa(int(roll)) + " " + strconv.Itoa(int(pitch)) + " " + strconv.Itoa(int(yaw)) + "\n"
 //			fmt.Print(d)
-//			conn.Write([]byte(d))
+//			tcpconn.Write([]byte(d))
 //		})
 //	}
 //

@@ -4,16 +4,23 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.Buffer;
+import java.util.Arrays;
 import java.util.concurrent.*;
+import java.util.regex.Pattern;
 
 import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
     private boolean stop = false;
     Socket clientSocket = null;
+    DatagramSocket udpSocket = null;
+    byte[] receiveData = new byte[1024];
+    DatagramPacket receivePacket = null;
     DataOutputStream outToServer = null;
     private Game game;
     private static final int MAX_PORT_NUMBER = 65535;
@@ -35,12 +42,17 @@ public class ReadFromGo implements Runnable {
         }
     }
 
+    /**
+     * Takes data sendt by Go server and inteprets them. The data is available in the variables game.roll, game.pitch and game.yaw.
+     * @param line the data from the Go server.
+     */
     public void intepretData(String line) {
+        line = line.split("\n")[0];
         if (line.matches("\\d+")) {
         } else if (line.contains("error")) {
             System.out.println(line);
             stop();
-        } else if (line.matches("-?\\d+ -?\\d+ -?\\d+")) {
+        } else if (Pattern.compile("-?\\d+ -?\\d+ -?\\d+", Pattern.MULTILINE).matcher(line).matches()) {
             String[] coords = line.split(" ");
             game.roll = Integer.parseInt(coords[0]);
             game.pitch = Integer.parseInt(coords[1]);
@@ -54,13 +66,19 @@ public class ReadFromGo implements Runnable {
         String line;
         BufferedReader inFromServer = connectTo(port);
 
+
+
         while (!stop) {
-            line = inFromServer.readLine();
-            intepretData(line);
+            intepretData(udpReceive());
         }
         clientSocket.close();
     }
 
+    /**
+     * Connects to Go server, if Go server is not online, a subprocess of the Go server will be started on an available port.
+     * @param preferredPort The port that Go server exists or where we would prefer to communicate with the Go server.
+     * @return The buffered reader to read sphero data.
+     */
     public BufferedReader connectTo(int preferredPort) {
         boolean connected = false;
         BufferedReader inFromServer = null;
@@ -76,7 +94,6 @@ public class ReadFromGo implements Runnable {
                     System.out.println("Started Go");
                     BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
                     Runnable task1 = new Runnable(){
-
                         @Override
                         public void run(){
                             try {
@@ -99,9 +116,14 @@ public class ReadFromGo implements Runnable {
                     System.out.println("busy port " + preferredPort);
                 }
 
+                udpSocket = new DatagramSocket(preferredPort);
+                receivePacket = new DatagramPacket(receiveData, receiveData.length);
+
+
                 TimeUnit.SECONDS.sleep(1);
                 clientSocket = new Socket("localhost", preferredPort);
                 outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
                 outToServer.writeBytes("Hello Go Beep Boop\n");
                 inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
@@ -137,6 +159,11 @@ public class ReadFromGo implements Runnable {
         return inFromServer;
     }
 
+    /**
+     * Checks if there is a server on the port
+     * @param port the port number to be checked
+     * @return true if the port is busy
+     */
     public static boolean available(int port) {
         if (port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER) {
             throw new IllegalArgumentException("Invalid start port: " + port);
@@ -167,6 +194,19 @@ public class ReadFromGo implements Runnable {
         return false;
     }
 
+    /**
+     * Listens for data on udpsocket. Make sure it is initialized, because it won't be checked for preformance purposes.
+     * @return the data receive from Go.
+     */
+    private String udpReceive() throws IOException {
+        udpSocket.receive(receivePacket);
+        return new String(receivePacket.getData());
+    }
+
+    private void feedback(BufferedReader fromServer) {
+
+    }
+
     public void stop() {
         if (clientSocket != null && !clientSocket.isClosed()) {
             try {
@@ -183,6 +223,7 @@ public class ReadFromGo implements Runnable {
     public void connect() {
         try {
             outToServer.writeBytes("Connect\n");
+            System.out.println("stop");
         } catch (IOException e) {
             e.printStackTrace();
         }
