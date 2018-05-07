@@ -36,7 +36,6 @@ public class ReadFromGo implements Runnable {
             getData(9001);
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("gggg");
         } finally {
             game.readerIsRunning = false;
         }
@@ -103,9 +102,6 @@ public class ReadFromGo implements Runnable {
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                System.out.println("dafuq");
-                            } finally {
-                                System.out.println("closing :S");
                             }
                         }
                     };

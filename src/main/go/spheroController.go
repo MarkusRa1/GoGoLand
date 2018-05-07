@@ -53,7 +53,7 @@ func tcpConnect() {
 		var err1 error = nil
 		ln, err1 = net.Listen("tcp", "127.0.0.1:" + port)
 		if err1 != nil {
-			panic("omg " + err1.Error())
+			panic(err1.Error())
 		}
 	}
 
@@ -185,12 +185,11 @@ func feedBack() {
 
 		fmt.Println(message)
 		if strings.Compare(message, "Connect\n") == 0 {
-			fmt.Println("sweet connect")
-			os.Exit(100)
+			fmt.Println("Connect")
+			os.Exit(100) // Temporary
 			if spheroConnectedOrTrying {
 				incomingCommand<-SpheroCommand{"Connect", 0}
 				<-readyToRestartSpheroConnection
-				fmt.Println("hmm")
 			}
 			go sendData()
 		}

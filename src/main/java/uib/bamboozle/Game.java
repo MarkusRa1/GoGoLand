@@ -66,7 +66,6 @@ public class Game extends com.badlogic.gdx.Game {
     public void connect() {
         System.out.println("connect()");
         if (reader == null) {
-            System.out.println("pls gjør dette");
             reader = new ReadFromGo(this);
             readerThread = new Thread(reader);
             readerThread.start();
