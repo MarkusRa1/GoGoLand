@@ -88,7 +88,7 @@ public class ReadFromGo implements Runnable {
         while (!connected) {
             try {
                 if (available(preferredPort)) {
-                    ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/tcpServer.go", "" + preferredPort);
+                    ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", "" + preferredPort);
                     ps.redirectErrorStream(true);
                     Process pr = ps.start();
                     System.out.println("Started Go");
@@ -107,7 +107,6 @@ public class ReadFromGo implements Runnable {
                             } finally {
                                 System.out.println("closing :S");
                             }
-
                         }
                     };
                     t = new Thread(task1);

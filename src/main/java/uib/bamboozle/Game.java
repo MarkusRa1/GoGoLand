@@ -17,6 +17,7 @@ public class Game extends com.badlogic.gdx.Game {
     private MainMenuScreen mainMenuScreen;
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
+    private Thread readerThread;
     
     public int roll;
     public int pitch;
@@ -63,20 +64,28 @@ public class Game extends com.badlogic.gdx.Game {
     }
 
     public void connect() {
-//        if(!readerIsRunning) {
-//            disconnect();
-//            reader = new ReadFromGo(this);
-//            new Thread(reader).start();
-//        }
+        System.out.println("connect()");
         if (reader == null) {
+            System.out.println("pls gjør dette");
             reader = new ReadFromGo(this);
-            new Thread(reader).start();
-        } else
+            readerThread = new Thread(reader);
+            readerThread.start();
+        } else {
             reader.connect();
+            if (readerThread != null) {
+                readerThread.interrupt();
+                readerThread = new Thread(reader);
+                readerThread.start();
+                System.out.println("Thread interrupted and started");
+            }
+        }
     }
 
     public void disconnect() {
-        if(reader != null) reader.stop();
+        if(reader != null){
+            reader.stop();
+        }
+
     }
 
     public void setConnected(boolean c) {
