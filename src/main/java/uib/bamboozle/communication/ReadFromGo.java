@@ -133,7 +133,8 @@ public class ReadFromGo implements Runnable {
                 }
             } catch (IOException e) {
                 connected = false;
-                System.out.println("wut io drit");
+                e.printStackTrace();
+                System.out.println("Retrying...");
             } catch (TimeoutException ex) {
                 System.out.println("Timeout when connected to server on port  " + preferredPort);
                 connected = false;
@@ -142,7 +143,6 @@ public class ReadFromGo implements Runnable {
                 connected = false;
             } catch (ExecutionException e) {
                 e.printStackTrace();
-                System.out.println("wut");
                 connected = false;
             } finally {
                 if (future != null)
