@@ -26,6 +26,8 @@ public class ReadFromGo implements Runnable {
     private static final int MAX_PORT_NUMBER = 65535;
     private static final int MIN_PORT_NUMBER = 0;
 
+    private boolean goServerRunning = false;
+
     public ReadFromGo(Game game) {
         this.game = game;
     }
@@ -65,8 +67,6 @@ public class ReadFromGo implements Runnable {
         String line;
         BufferedReader inFromServer = connectTo(port);
 
-
-
         while (!stop) {
             intepretData(udpReceive());
         }
@@ -99,6 +99,8 @@ public class ReadFromGo implements Runnable {
                                 String line;
                                 while ((line = in.readLine()) != null) {
                                     System.out.println(line);
+                                    if (line.compareTo("Launching server...") == 0)
+                                        goServerRunning = true;
                                 }
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -109,6 +111,11 @@ public class ReadFromGo implements Runnable {
                     t.start();
                 } else {
                     System.out.println("busy port " + preferredPort);
+                    goServerRunning = true;
+                }
+
+                while(!goServerRunning) {
+                    Thread.sleep(200);
                 }
 
                 udpSocket = new DatagramSocket(preferredPort);

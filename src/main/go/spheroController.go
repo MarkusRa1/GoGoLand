@@ -42,8 +42,6 @@ func main() {
 		dontCloseWhenJavaClose = false
 	}
 
-	fmt.Println("Launching server...")
-
 	go sendData()
 	tcpConnect()
 }
@@ -56,7 +54,7 @@ func tcpConnect() {
 			panic(err1.Error())
 		}
 	}
-
+	fmt.Println("Launching server...")
 	tcpconn, _ = ln.Accept()
 	fmt.Println("Ready for connection")
 	message, err2 := bufio.NewReader(tcpconn).ReadString('\n')
