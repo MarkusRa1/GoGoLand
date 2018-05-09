@@ -86,6 +86,7 @@ public class ReadFromGo implements Runnable {
 
         while (!connected) {
             try {
+                goServerRunning = false;
                 if (available(preferredPort)) {
                     ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", "" + preferredPort);
                     ps.redirectErrorStream(true);
