@@ -8,6 +8,7 @@ import uib.bamboozle.ui.ModelFactory;
 import uib.bamboozle.ui.Renderer;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public abstract class Level implements Disposable {
@@ -27,8 +28,13 @@ public abstract class Level implements Disposable {
     }
 
     public void dispose() {
-        for(GameObject object : objects) {
-            object.dispose();
+        Iterator<GameObject> iter = objects.iterator();
+
+        while(iter.hasNext()) {
+            GameObject obj = iter.next();
+            dynamicsWorld.removeRigidBody(obj.getBody());
+            obj.dispose();
+            iter.remove();
         }
 
         renderer.dispose();
