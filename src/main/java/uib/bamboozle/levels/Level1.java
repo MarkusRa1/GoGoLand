@@ -22,7 +22,7 @@ public class Level1 extends Level {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             if (ball != null) {
                 removeObject(ball);
             }

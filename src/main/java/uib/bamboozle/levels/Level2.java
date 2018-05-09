@@ -14,7 +14,7 @@ public class Level2 extends Level {
     public Level2(Graphics graphics) {
         super(graphics);
 
-        cube = getModelFactory().get("cube", new Vector3(0f, 0f, 0f), 0f);
+        cube = getModelFactory().get("level2", new Vector3(0f, 0f, 0f), 0f);
         cube.getBody().setCollisionFlags(cube.getBody().getCollisionFlags()
                 | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
         addObject(cube);
@@ -22,7 +22,7 @@ public class Level2 extends Level {
 
     @Override
     public void render(float delta) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             if (ball != null) {
                 removeObject(ball);
             }
@@ -35,7 +35,12 @@ public class Level2 extends Level {
     }
 
     public boolean isFinished() {
-        return false;
+        if(ball != null) {
+            Vector3 pos = ball.getInstance().transform.getTranslation(new Vector3());
+            return pos.len() > 5;
+        } else {
+            return false;
+        }
     }
 
     public GameObject getCube() {

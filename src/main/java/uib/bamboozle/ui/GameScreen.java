@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 
+import org.lwjgl.Sys;
 import uib.bamboozle.Game;
 import uib.bamboozle.levels.Level;
 import uib.bamboozle.levels.Level1;
@@ -42,6 +43,8 @@ public class GameScreen implements Screen {
 
         GameObject cube = level.getCube();
 
+        cheat();
+
         tempRoll = gradualChangeToRollPitchOrYaw(tempRoll, game.roll);
         tempPitch = gradualChangeToRollPitchOrYaw(tempPitch, game.pitch);
         tempYaw = gradualChangeToRollPitchOrYaw(tempYaw, game.yaw);
@@ -75,6 +78,9 @@ public class GameScreen implements Screen {
 
 
     private void nextLevel() {
+        if(level != null) {
+            level.dispose();
+        }
         level = getLevel(++levelNum);
     }
 
@@ -90,6 +96,21 @@ public class GameScreen implements Screen {
     }
     public int getLevelNumber() {
     	return levelNum;
+    }
+
+    private void cheat() {
+        if(Gdx.input.isKeyPressed(Keys.LEFT)) {
+            game.roll += 1;
+        }
+        if(Gdx.input.isKeyPressed(Keys.RIGHT)) {
+            game.roll -= 1;
+        }
+        if(Gdx.input.isKeyPressed(Keys.UP)) {
+            game.pitch += 1;
+        }
+        if(Gdx.input.isKeyPressed(Keys.DOWN)) {
+            game.pitch -= 1;
+        }
     }
 
     @Override
