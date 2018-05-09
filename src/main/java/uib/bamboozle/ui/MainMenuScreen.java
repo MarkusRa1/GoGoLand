@@ -2,8 +2,11 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -24,6 +27,9 @@ public class MainMenuScreen extends Menu implements Screen {
     private final String exit = "exitGame";
     private final String connect = "connect";
     
+    private FileHandle packFile = new FileHandle("background");
+    ParallaxBackground rbg;
+    
     private Table table;
 
     private Button connectButton;
@@ -34,21 +40,25 @@ public class MainMenuScreen extends Menu implements Screen {
     	super(game);
         table = new Table();
 
-        setupBackground();
+    //    setupBackground();
 
         createButtons();
         //For � sjekke rammene til tablet
         //table.setDebug(true);
         table.setFillParent(true);
         getStage().addActor(table);;
+        TextureAtlas atlas = new TextureAtlas(packFile);
+        rbg = new ParallaxBackground(new ParallaxLayer[]{
+                new ParallaxLayer(atlas.findRegion("bg1.png"),new Vector2(),new Vector2(0, 0)),
+          }, 1920, 1080,new Vector2(150,0));
         
     }
     
-    private void setupBackground() {
-        Texture backgroundTexture = new Texture(BACKGROUND);
-        Image backgroundImage = new Image(backgroundTexture);
-        getStage().addActor(backgroundImage);
-    }
+//    private void setupBackground() {
+//        Texture backgroundTexture = new Texture(BACKGROUND);
+//        Image backgroundImage = new Image(backgroundTexture);
+//        getStage().addActor(backgroundImage);
+//    }
 
     private void createButtons() {
         connectButton = createButton(CONNECT, connect, this);
@@ -78,7 +88,7 @@ public class MainMenuScreen extends Menu implements Screen {
         } else {
             connectButton.setStyle(connectedStyle);
         }
-
+        rbg.render(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
