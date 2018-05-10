@@ -115,15 +115,19 @@ func sendData() {
 				}
 			})
 
+
+
 			for !stop && !reConnect {
 				var c SpheroCommand
 				c = <-incomingCommand
 				switch c.name {
 				case "Connect":
 					reConnect = true
+					spheroDriver.DeleteEvent(sphero.SensorData)
 					stopSpheroConnection<-true
 					break
 				case "Stop":
+
 					stop = true
 					stopSpheroConnection<-true
 					break
