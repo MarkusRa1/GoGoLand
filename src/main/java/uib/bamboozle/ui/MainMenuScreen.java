@@ -27,8 +27,7 @@ public class MainMenuScreen extends Menu implements Screen {
     private final String exit = "exitGame";
     private final String connect = "connect";
     
-    private FileHandle packFile = new FileHandle("background");
-    ParallaxBackground rbg;
+    ParallaxBackground parallaxBackground;
     
     private Table table;
 
@@ -41,24 +40,22 @@ public class MainMenuScreen extends Menu implements Screen {
         table = new Table();
 
     //    setupBackground();
+        Array<Texture> textures = new Array<Texture>();
+        for(int i = 1; i <=2;i++){
+          textures.add(new Texture(Gdx.files.internal("Background/bg"+i+".png")));
+          textures.get(textures.size-1).setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
+        }
+        parallaxBackground = new ParallaxBackground(textures, stage.getWidth(), stage.getHeight(), 1);
+        getStage().addActor(parallaxBackground);
 
         createButtons();
         //For � sjekke rammene til tablet
         //table.setDebug(true);
         table.setFillParent(true);
-        getStage().addActor(table);;
-        TextureAtlas atlas = new TextureAtlas(packFile);
-        rbg = new ParallaxBackground(new ParallaxLayer[]{
-                new ParallaxLayer(atlas.findRegion("bg1.png"),new Vector2(),new Vector2(0, 0)),
-          }, 1920, 1080,new Vector2(150,0));
+        getStage().addActor(table);
+        
         
     }
-    
-//    private void setupBackground() {
-//        Texture backgroundTexture = new Texture(BACKGROUND);
-//        Image backgroundImage = new Image(backgroundTexture);
-//        getStage().addActor(backgroundImage);
-//    }
 
     private void createButtons() {
         connectButton = createButton(CONNECT, connect, this);
@@ -88,7 +85,6 @@ public class MainMenuScreen extends Menu implements Screen {
         } else {
             connectButton.setStyle(connectedStyle);
         }
-        rbg.render(delta);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
