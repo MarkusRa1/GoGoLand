@@ -115,8 +115,9 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 func sendData() {
 	reConnect = true
 	for reConnect && !stop {
-		reConnect = false;
-		spheroConnectedOrTrying = true;
+		status.TryingToConnect = true
+		reConnect = false
+		spheroConnectedOrTrying = true
 		adaptor, spheroDriver := getSphero()
 		spheroDriver.SetStabilization(false)
 
@@ -135,6 +136,7 @@ func sendData() {
 
 				if !isMonitoring {
 					isMonitoring = true
+					status.IsMonitoring = true
 				}
 			})
 
@@ -165,11 +167,13 @@ func sendData() {
 		)
 		robot.AutoRun = false
 		robot.Commander.Commands()
-		var tryToConnect bool = true
+		var tryToConnect = true
 		for tryToConnect && !stop {
 			sErr := robot.Start()
 			if sErr == nil {
 				tryToConnect = false
+				status.Connected = true
+				status.TryingToConnect = false
 			} else {
 				time.Sleep(time.Second)
 			}
@@ -179,6 +183,7 @@ func sendData() {
 		robot.Stop()
 		adaptor.Disconnect()
 		gobot.Connection(adaptor).Finalize()
+		status.Connected = false
 		if reConnect {
 			time.Sleep(time.Second)
 			readyToRestartSpheroConnection<-true
