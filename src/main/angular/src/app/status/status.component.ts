@@ -1,5 +1,6 @@
 import { StatusService } from '../status.service'
 import { Component, OnInit } from '@angular/core';
+import { Status } from '../status.service';
 
 @Component({
   selector: 'app-status',
@@ -11,11 +12,17 @@ export class StatusComponent implements OnInit {
   connected;
 
   constructor(service: StatusService) {
-    let stats = service.getStatus();
-    if (stats.connected) {
-      this.connected = "Connected on " + stats.port;
-    } else if(stats.trying_to_connect) {
-      this.connected = "Trying to connect on " + stats.port + "...";
+    service.getStatus().subscribe(
+     (data: Status) => this.setupData(data),
+     error => console.log(error)
+    );
+  }
+
+  private setupData(data: Status) {
+    if (data.connected) {
+      this.connected = "Connected on " + data.port;
+    } else if(data.trying_to_connect) {
+      this.connected = "Trying to connect on " + data.port + "...";
     } else {
       this.connected = "Not connected.";
     }

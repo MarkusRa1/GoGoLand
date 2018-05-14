@@ -4,13 +4,16 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { StatusComponent } from './status/status.component';
 
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     AppComponent,
     StatusComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule
   ],
   providers: [
     //StatusService

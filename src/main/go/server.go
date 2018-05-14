@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"fmt"
 	"io/ioutil"
-	"encoding/json"
 	"os"
+	"encoding/json"
+	"strconv"
+	"net"
 )
-
-var path = "../angular/dist/angular/"
 
 var netPort = "9001"
 
@@ -20,8 +20,7 @@ func main() {
 		dontCloseWhenJavaClose = false
 	}
 
-	go sendData()
-	fmt.Println(os.Getwd())
+	//go sendData()
 
 	http.HandleFunc("/", handler)
 	http.ListenAndServe("127.0.0.1:" + netPort, nil)
@@ -30,30 +29,61 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		path := r.URL.Path[1:]
-		var data []byte
-		var err error
-		switch path {
-		case "":
-			data, err = ioutil.ReadFile(path + "index.html")
-		case "status.json":
-			data, err = json.Marshal(status)
-		default:
-			data, err = ioutil.ReadFile(path + r.URL.Path[1:])
-		}
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "500 - Something went wrong! :S")
-			if debugging {
-				fmt.Println(err.Error())
-			}
-		} else {
-			w.Write(data)
-		}
-
+		handleGet(r, w)
 	case "POST":
-		fmt.Println("kult")
+		fmt.Println(r.Body)
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 	}
+}
+
+func handleGet(r *http.Request, w http.ResponseWriter) {
+	path := r.URL.Path[1:]
+	var data []byte
+	var err error
+	fmt.Println(path)
+	switch path {
+	case "getstream":
+		fmt.Println(r.URL.Query()["port"])
+		handleStream(r, w)
+	case "status.json":
+		fallthrough
+	case "assets/status.json":
+		data, err = json.Marshal(status)
+	case "":
+		data, err = ioutil.ReadFile("../angular/dist/angular/index.html")
+	default:
+		data, err = ioutil.ReadFile("../angular/dist/angular/" + r.URL.Path[1:])
+	}
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 - Something went wrong! :S")
+		if debugging {
+			fmt.Println(err.Error())
+		}
+	} else if data == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "500 - Something went wrong! :S")
+	} else {
+		w.Write(data)
+	}
+}
+
+func handleStream(request *http.Request, w http.ResponseWriter) {
+	ports, ok := request.URL.Query()["port"]
+	if ok || len(ports) < 1 {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Require a value for the port!"))
+		return
+	}
+
+	_, serr := strconv.Atoi(ports[0])
+	if serr != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("400 - Port has to be a number!"))
+		return
+	}
+
+	udpconn, _ = net.Dial("udp", "127.0.0.1:" + ports[0])
+	udpConnected = true
 }

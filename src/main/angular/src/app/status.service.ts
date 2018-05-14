@@ -1,12 +1,21 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+export interface Status {
+  connected: boolean;
+  trying_to_connect: boolean;
+  port: string;
+  is_monitoring: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class StatusService {
-  constructor() { }
+  statusUrl = "assets/status.json"
+
+  constructor(private http: HttpClient) { }
   getStatus() {
-    
-    return {connected:false, trying_to_connect:true, port:"COM6"}
+    return this.http.get<Status>(this.statusUrl);
   }
 }
