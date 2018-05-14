@@ -4,13 +4,22 @@ import (
 	"net/http"
 	"fmt"
 	"io/ioutil"
+	"encoding/json"
+	"os"
 )
 
 var path = "../angular/dist/angular/"
 
+var netPort = "9001"
+
 func main() {
+	if len(os.Args) > 1 {
+		netPort = os.Args[1]
+		dontCloseWhenJavaClose = false
+	}
+
 	http.HandleFunc("/", handler)
-	http.ListenAndServe("127.0.0.1:8000", nil)
+	http.ListenAndServe("127.0.0.1:" + netPort, nil)
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -23,7 +32,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		case "":
 			data, err = ioutil.ReadFile(path + "index.html")
 		case "status.json":
-			data = []byte("{status:{connected:false}}")
+			data, err = json.Marshal(status)
 		default:
 			data, err = ioutil.ReadFile(path + r.URL.Path[1:])
 		}

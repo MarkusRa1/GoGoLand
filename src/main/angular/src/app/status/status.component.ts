@@ -14,7 +14,7 @@ export class StatusComponent implements OnInit {
     let stats = service.getStatus();
     if (stats.connected) {
       this.connected = "Connected on " + stats.port;
-    } else if(stats.tryingToConnect) {
+    } else if(stats.trying_to_connect) {
       this.connected = "Trying to connect on " + stats.port + "...";
     } else {
       this.connected = "Not connected.";

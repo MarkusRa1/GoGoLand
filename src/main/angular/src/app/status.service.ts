@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class StatusService {
   constructor() { }
   getStatus() {
-    return {connected:false, tryingToConnect:true, port:"COM6"}
+    
+    return {connected:false, trying_to_connect:true, port:"COM6"}
   }
 }

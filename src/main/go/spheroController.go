@@ -16,19 +16,24 @@ import (
 )
 
 var stop = false
-var tcpconn net.Conn = nil
-var udpconn net.Conn = nil
 var spheroConnectedOrTrying = false
-var port = "9001"
 var dontCloseWhenJavaClose = true
 var lostConnection = false
-var ln net.Listener = nil
 var tcpConnected = false
-var robot *gobot.Robot = nil
-var incomingCommand = make(chan SpheroCommand)
-var stopSpheroConnection = make(chan bool)
+var udpConnected = false
 var isMonitoring = false
 var reConnect = false
+
+var tcpconn net.Conn = nil
+var udpconn net.Conn = nil
+var ln net.Listener = nil
+
+
+
+var robot *gobot.Robot = nil
+
+var incomingCommand = make(chan SpheroCommand)
+var stopSpheroConnection = make(chan bool)
 var readyToRestartSpheroConnection = make(chan bool)
 
 type SpheroCommand struct {
@@ -36,20 +41,34 @@ type SpheroCommand struct {
 	value int
 }
 
-func main() {
-	if len(os.Args) > 1 {
-		port = os.Args[1]
-		dontCloseWhenJavaClose = false
-	}
-
-	go sendData()
-	tcpConnect()
+type Status struct {
+	Connected		bool	`json:"connected"`
+	TryingToConnect	bool	`json:"trying_to_connect"`
+	Port			string	`json:"port"`				// eg. COM6 if windows
+	IsMonitoring	bool	`json:"is_monitoring"`
 }
+
+var status = &Status{
+	false,
+	false,
+	"",
+	false,
+}
+
+//func main() {
+//	if len(os.Args) > 1 {
+//		netPort = os.Args[1]
+//		dontCloseWhenJavaClose = false
+//	}
+//
+//	go sendData()
+//	tcpConnect()
+//}
 
 func tcpConnect() {
 	if !lostConnection {
 		var err1 error = nil
-		ln, err1 = net.Listen("tcp", "127.0.0.1:" + port)
+		ln, err1 = net.Listen("tcp", "127.0.0.1:" +netPort)
 		if err1 != nil {
 			panic(err1.Error())
 		}
@@ -66,7 +85,7 @@ func tcpConnect() {
 		panic("Beep Boop who dis is: " + message)
 	}
 	tcpconn.Write([]byte("Hello Java Beep Boop\n"))
-	udpconn, _ = net.Dial("udp", "127.0.0.1:" + port)
+	udpconn, _ = net.Dial("udp", "127.0.0.1:" +netPort)
 	tcpConnected = true
 	fmt.Println("Connection setup")
 	lostConnection = false
@@ -77,13 +96,17 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	var adaptor *sphero.Adaptor
 	switch runtime.GOOS {
 	case "windows":
-		adaptor = sphero.NewAdaptor("COM6")
+		prt := "COM6"
+		adaptor = sphero.NewAdaptor(prt)
+		status.Port = prt
 	case "darwin":
 		//op, _ := exec.Command("/bin/sh", "./findspheromac.sh").Output()
 		adaptor = sphero.NewAdaptor("/dev/" + "tty.Sphero-GWG-AMP-SPP" /*strings.TrimRight(string(op), "\n")*/)
-	default:
+		status.Port = "tty.Sphero-GWG-AMP-SPP"
+		default:
 		fmt.Println("OS not supported yet...")
 		adaptor = nil
+		status.Port = "null"
 	}
 	spheroDriver := sphero.NewSpheroDriver(adaptor)
 	return adaptor, spheroDriver
@@ -105,7 +128,7 @@ func sendData() {
 				var pitch int16 = data.(sphero.DataStreamingPacket).FiltPitch
 				var yaw int16 = data.(sphero.DataStreamingPacket).FiltYaw
 				d := strconv.Itoa(int(roll)) + " " + strconv.Itoa(int(pitch)) + " " + strconv.Itoa(int(yaw)) + "\n"
-				if !lostConnection && tcpConnected && !stop {
+				if !lostConnection && udpConnected && !stop {
 					udpconn.Write([]byte(d))
 					//fmt.Println(d)
 				}
