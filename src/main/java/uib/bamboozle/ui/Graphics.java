@@ -89,8 +89,16 @@ public class Graphics {
 
         factory.add("cube", modelBuilder.end(), null);
 
-        Model planeModel = loader.loadModel(Gdx.files.internal("level2.obj"));
-        factory.add("level2", planeModel, null);
+        Model level1 = loader.loadModel(Gdx.files.internal("level1.obj"));
+        factory.add("level1", level1, null);
+
+        Model level2 = loader.loadModel(Gdx.files.internal("level2.obj"));
+        factory.add("level2", level2, null);
+
+        Model goal = modelBuilder.createBox(2f, 0.5f, 2f,
+                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        factory.add("goal", goal, null);
 
         Model ballModel = modelBuilder.createSphere(2f, 2f, 2f, 24, 24,
                 new Material(ColorAttribute.createDiffuse(Color.ORANGE)),

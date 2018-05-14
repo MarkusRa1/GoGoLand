@@ -10,6 +10,7 @@ import uib.bamboozle.ui.Graphics;
 public class Level2 extends Level {
     private GameObject cube;
     private GameObject ball;
+    private GameObject goal;
 
     public Level2(Graphics graphics) {
         super(graphics);
@@ -18,6 +19,9 @@ public class Level2 extends Level {
         cube.getBody().setCollisionFlags(cube.getBody().getCollisionFlags()
                 | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
         addObject(cube);
+
+        goal = getModelFactory().get("goal", new Vector3(6f, -1f, 1f), 0f);
+        addObject(goal);
     }
 
     @Override
@@ -36,8 +40,8 @@ public class Level2 extends Level {
 
     public boolean isFinished() {
         if(ball != null) {
-            Vector3 pos = ball.getInstance().transform.getTranslation(new Vector3());
-            return pos.len() > 5;
+            Vector3 dist = goal.getInstance().transform.getTranslation(new Vector3()).sub(ball.getInstance().transform.getTranslation(new Vector3()));
+            return dist.len() < 1.5;
         } else {
             return false;
         }
