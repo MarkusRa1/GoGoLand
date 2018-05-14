@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 
+import com.badlogic.gdx.math.Vector3;
 import org.lwjgl.Sys;
 import uib.bamboozle.Game;
 import uib.bamboozle.levels.Level;
@@ -81,6 +82,9 @@ public class GameScreen implements Screen {
         if(level != null) {
             level.dispose();
         }
+
+        graphics.getRenderer().setCameraPosition(new Vector3());
+
         level = getLevel(++levelNum);
     }
 

@@ -3,6 +3,7 @@ package uib.bamboozle.ui;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.math.Vector3;
 
 import java.util.Set;
 
@@ -27,5 +28,9 @@ public class Renderer {
 
     public void dispose() {
         modelBatch.dispose();
+    }
+
+    public void setCameraPosition(Vector3 newPos) {
+        cam.position.set(newPos);
     }
 }

@@ -1,5 +1,6 @@
 package uib.bamboozle.levels;
 
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.utils.Disposable;
 import uib.bamboozle.ui.GameObject;
@@ -56,6 +57,10 @@ public abstract class Level implements Disposable {
 
     protected ModelFactory getModelFactory() {
         return factory;
+    }
+
+    protected void setCameraPosition(Vector3 newPos) {
+        renderer.setCameraPosition(newPos);
     }
 
     public abstract boolean isFinished();
