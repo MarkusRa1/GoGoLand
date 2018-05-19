@@ -2,13 +2,11 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
@@ -16,7 +14,8 @@ import com.badlogic.gdx.utils.Array;
 import uib.bamboozle.Game;
 
 public class MainMenuScreen extends Menu implements Screen {
-    private static final String PLAY = "start.png";
+    //Name of Pictures
+	private static final String PLAY = "Play2.png";
     private static final String BACKGROUND = "bg2.jpg";
     private static final String EXIT = "bs_quit.png";
     private static final String CONNECT = "connect.png";
@@ -27,10 +26,12 @@ public class MainMenuScreen extends Menu implements Screen {
     private final String exit = "exitGame";
     private final String connect = "connect";
     
+    //Graphics for mainmenu
+    TextureAtlas spriteSheet;
+    private Array<Sprite> bb8;
     ParallaxBackground parallaxBackground;
-    
     private Table table;
-
+    
     private Button connectButton;
     private ImageButton.ImageButtonStyle connectedStyle = new ImageButton.ImageButtonStyle();
     private ImageButton.ImageButtonStyle disconnectedStyle = new ImageButton.ImageButtonStyle();
@@ -38,18 +39,21 @@ public class MainMenuScreen extends Menu implements Screen {
     public MainMenuScreen(Game game) {
     	super(game);
         table = new Table();
-
-    //    setupBackground();
+        
+        //BB8 animation
+        spriteSheet = new TextureAtlas("bbm8.txt");
+        bb8 = spriteSheet.createSprites("BB8");
+        
+        //parallax background
         Array<Texture> textures = new Array<Texture>();
-        for(int i = 1; i <=2;i++){
+        for(int i = 4; i <=4;i++){
           textures.add(new Texture(Gdx.files.internal("Background/bg"+i+".png")));
           textures.get(textures.size-1).setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
         }
         parallaxBackground = new ParallaxBackground(textures, stage.getWidth(), stage.getHeight(), 1);
         getStage().addActor(parallaxBackground);
-
+        
         createButtons();
-        //For � sjekke rammene til tablet
         //table.setDebug(true);
         table.setFillParent(true);
         getStage().addActor(table);
