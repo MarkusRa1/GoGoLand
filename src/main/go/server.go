@@ -45,7 +45,7 @@ func handleGet(r *http.Request, w http.ResponseWriter) {
 	switch path {
 	case "getstream":
 		fmt.Println(r.URL.Query()["port"])
-		handleStream(r, w)
+		data = handleStream(r, w)
 	case "status.json":
 		fallthrough
 	case "assets/status.json":
@@ -69,21 +69,21 @@ func handleGet(r *http.Request, w http.ResponseWriter) {
 	}
 }
 
-func handleStream(request *http.Request, w http.ResponseWriter) {
+func handleStream(request *http.Request, w http.ResponseWriter) []byte {
 	ports, ok := request.URL.Query()["port"]
-	if ok || len(ports) < 1 {
+	if !ok || len(ports) < 1 {
+		fmt.Println(len(ports))
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Require a value for the port!"))
-		return
+		return []byte("400 - Require a value for the port!")
 	}
 
 	_, serr := strconv.Atoi(ports[0])
 	if serr != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("400 - Port has to be a number!"))
-		return
+		return []byte("400 - Not a legal value for the port!")
 	}
 
 	udpconn, _ = net.Dial("udp", "127.0.0.1:" + ports[0])
 	udpConnected = true
+	return []byte("Sending on port " + ports[0])
 }
