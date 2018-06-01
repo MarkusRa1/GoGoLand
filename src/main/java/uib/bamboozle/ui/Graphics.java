@@ -52,6 +52,7 @@ public class Graphics {
         renderer = new Renderer(cam, environment, modelBatch);
 
         audioManager = new AudioManager();
+        audioManager.preloadTracks("level1music.wav");
     }
 
     public void render(float delta) {
