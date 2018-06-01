@@ -24,6 +24,7 @@ public class Graphics {
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
     private Renderer renderer;
+    private AudioManager audioManager;
 
     public Graphics() {
         Bullet.init();
@@ -49,6 +50,8 @@ public class Graphics {
 
         modelFactory = createModels();
         renderer = new Renderer(cam, environment, modelBatch);
+
+        audioManager = new AudioManager();
     }
 
     public void render(float delta) {
@@ -118,5 +121,9 @@ public class Graphics {
 
     public ModelFactory getModelFactory() {
         return modelFactory;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
     }
 }
