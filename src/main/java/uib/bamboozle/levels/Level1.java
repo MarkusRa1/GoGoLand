@@ -23,8 +23,6 @@ public class Level1 extends Level {
 
         goal = getModelFactory().get("goal", new Vector3(8.7f, -1f, 1f), 0f);
         addObject(goal);
-
-        playTrack("level1music.wav");
     }
 
     @Override
@@ -52,5 +50,9 @@ public class Level1 extends Level {
 
     public GameObject getCube() {
         return cube;
+    }
+
+    public String getTrackName() {
+        return "level1music.wav";
     }
 }

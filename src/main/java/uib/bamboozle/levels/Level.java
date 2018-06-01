@@ -15,13 +15,14 @@ public abstract class Level implements Disposable {
     private Renderer renderer;
     private Set<GameObject> objects = new HashSet<>();
     private ModelFactory factory;
-    private String track;
 
     public Level(Graphics graphics) {
         this.dynamicsWorld = graphics.getDynamicsWorld();
         this.renderer = graphics.getRenderer();
         this.factory = graphics.getModelFactory();
         this.audioManager = graphics.getAudioManager();
+
+        audioManager.loopTrack(getTrackName());
     }
 
     public void render(float delta) {
@@ -38,7 +39,7 @@ public abstract class Level implements Disposable {
             iter.remove();
         }
 
-        audioManager.stopTrack(track);
+        audioManager.stopTrack(getTrackName());
     }
 
     public abstract GameObject getCube();
@@ -59,14 +60,11 @@ public abstract class Level implements Disposable {
         return factory;
     }
 
-    protected void playTrack(String name) {
-        track = name;
-        audioManager.playTrack(name);
-    }
-
     protected void setCameraPosition(Vector3 newPos) {
         renderer.setCameraPosition(newPos);
     }
 
     public abstract boolean isFinished();
+
+    public abstract String getTrackName();
 }
