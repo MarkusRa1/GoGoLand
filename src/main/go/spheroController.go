@@ -46,10 +46,14 @@ type Status struct {
 	TryingToConnect	bool	`json:"trying_to_connect"`
 	Port			string	`json:"port"`				// eg. COM6 if windows
 	IsMonitoring	bool	`json:"is_monitoring"`
+	Os 				string	`json:"os"`
+	KnownPort		bool	`json:"known_port"`
 }
 
 var status = &Status{
 	false,
+	false,
+	"",
 	false,
 	"",
 	false,
