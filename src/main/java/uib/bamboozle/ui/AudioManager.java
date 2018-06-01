@@ -50,7 +50,6 @@ public class AudioManager implements Disposable {
     }
 
     public void playTrack(String name) {
-        stopTrack(name);
         getTrack(name).play();
     }
 
