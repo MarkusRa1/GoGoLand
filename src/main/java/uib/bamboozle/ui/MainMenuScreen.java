@@ -12,6 +12,9 @@ import com.badlogic.gdx.utils.Array;
 
 import uib.bamboozle.Game;
 
+/**
+ * The main menu screen shown when starting the game
+ */
 public class MainMenuScreen extends Menu implements Screen {
     private static final String PLAY = "start.png";
     private static final String BACKGROUND = "bg2.jpg";

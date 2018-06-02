@@ -18,6 +18,9 @@ public class Renderer {
         this.modelBatch = modelBatch;
     }
 
+    /**
+     * Draws the game objects on the screen
+     */
     public void render(Set<GameObject> objects) {
         modelBatch.begin(cam);
         for(GameObject object : objects) {
