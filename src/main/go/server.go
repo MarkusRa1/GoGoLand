@@ -31,7 +31,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		handleGet(r, w)
 	case "POST":
+		fmt.Println("POST")
 		fmt.Println(r.Body)
+
 	default:
 		w.WriteHeader(http.StatusBadRequest)
 	}

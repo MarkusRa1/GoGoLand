@@ -6,6 +6,8 @@ export interface Status {
   trying_to_connect: boolean;
   port: string;
   is_monitoring: boolean;
+  os: string;
+  known_port: boolean;
 }
 
 @Injectable({

@@ -5,11 +5,13 @@ import { AppComponent } from './app.component';
 import { StatusComponent } from './status/status.component';
 
 import { HttpClientModule } from '@angular/common/http';
+import { PortFormComponent } from './port-form/port-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    StatusComponent
+    StatusComponent,
+    PortFormComponent
   ],
   imports: [
     BrowserModule,

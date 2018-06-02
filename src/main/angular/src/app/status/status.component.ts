@@ -1,6 +1,7 @@
 import { StatusService } from '../status.service'
 import { Component, OnInit } from '@angular/core';
 import { Status } from '../status.service';
+import { $ } from 'protractor';
 
 @Component({
   selector: 'app-status',
@@ -10,6 +11,7 @@ import { Status } from '../status.service';
 export class StatusComponent implements OnInit {
   title = "Status";
   connected;
+  knownport = true;
 
   constructor(service: StatusService) {
     service.getStatus().subscribe(
@@ -26,8 +28,13 @@ export class StatusComponent implements OnInit {
     } else {
       this.connected = "Not connected.";
     }
+    this.knownport = data.known_port;
+    if (this.knownport) {
+    
+    }
   }
 
+  
   ngOnInit() {
   }
 
