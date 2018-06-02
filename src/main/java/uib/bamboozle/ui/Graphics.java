@@ -24,6 +24,7 @@ public class Graphics {
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
     private Renderer renderer;
+    private AudioManager audioManager;
 
     public Graphics() {
         Bullet.init();
@@ -49,6 +50,9 @@ public class Graphics {
 
         modelFactory = createModels();
         renderer = new Renderer(cam, environment, modelBatch);
+
+        audioManager = new AudioManager();
+        audioManager.preloadTracks("level1music.wav", "level2music.wav");
     }
 
     public void render(float delta) {
@@ -62,6 +66,7 @@ public class Graphics {
         dispatcher.dispose();
         collisionConfig.dispose();
         modelFactory.dispose();
+        renderer.dispose();
     }
 
     private ModelFactory createModels() {
@@ -118,5 +123,9 @@ public class Graphics {
 
     public ModelFactory getModelFactory() {
         return modelFactory;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
     }
 }

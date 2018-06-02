@@ -50,4 +50,8 @@ public class Level2 extends Level {
     public GameObject getCube() {
         return cube;
     }
+
+    public String getTrackName() {
+        return "level2music.wav";
+    }
 }
