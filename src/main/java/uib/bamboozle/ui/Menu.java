@@ -87,7 +87,9 @@ public abstract class Menu implements Screen {
                         case "exitToMainMenu":
                         	menu.exitToMainMenu();
                         	break;
-                        
+                        case "next":
+                            menu.next();
+                            break;
                     }
                 }
             }
@@ -119,6 +121,10 @@ public abstract class Menu implements Screen {
         } else {
             game.disconnect();
         }
+    }
+
+    public void next() {
+        game.nextLevel();
     }
 	@Override
 	public void dispose() {
