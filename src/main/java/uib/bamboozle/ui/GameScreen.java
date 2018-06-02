@@ -45,7 +45,7 @@ public class GameScreen implements Screen {
         checkForPauseRequest();
 
         if(level.isFinished()) {
-            nextLevel();
+            game.levelComplete();
         }
 
         GameObject cube = level.getCube();

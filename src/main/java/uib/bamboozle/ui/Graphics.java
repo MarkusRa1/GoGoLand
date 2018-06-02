@@ -27,6 +27,7 @@ public class Graphics {
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
     private Renderer renderer;
+    private AudioManager audioManager;
 
     /**
      * Initializes libgdx and jBullet
@@ -55,6 +56,9 @@ public class Graphics {
 
         modelFactory = createModels();
         renderer = new Renderer(cam, environment, modelBatch);
+
+        audioManager = new AudioManager();
+        audioManager.preloadTracks("level1music.wav", "level2music.wav");
     }
 
     /**
@@ -71,6 +75,7 @@ public class Graphics {
         dispatcher.dispose();
         collisionConfig.dispose();
         modelFactory.dispose();
+        renderer.dispose();
     }
 
     /**
@@ -131,5 +136,9 @@ public class Graphics {
 
     public ModelFactory getModelFactory() {
         return modelFactory;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
     }
 }

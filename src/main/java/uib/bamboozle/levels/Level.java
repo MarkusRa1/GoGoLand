@@ -3,10 +3,7 @@ package uib.bamboozle.levels;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.utils.Disposable;
-import uib.bamboozle.ui.GameObject;
-import uib.bamboozle.ui.Graphics;
-import uib.bamboozle.ui.ModelFactory;
-import uib.bamboozle.ui.Renderer;
+import uib.bamboozle.ui.*;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +13,7 @@ import java.util.Set;
  * An abstract class that provides functionality for the levels
  */
 public abstract class Level implements Disposable {
+    private final AudioManager audioManager;
     private btDiscreteDynamicsWorld dynamicsWorld;
     private Renderer renderer;
     private Set<GameObject> objects = new HashSet<>();
@@ -25,6 +23,9 @@ public abstract class Level implements Disposable {
         this.dynamicsWorld = graphics.getDynamicsWorld();
         this.renderer = graphics.getRenderer();
         this.factory = graphics.getModelFactory();
+        this.audioManager = graphics.getAudioManager();
+
+        audioManager.loopTrack(getTrackName());
     }
 
     /**
@@ -49,7 +50,7 @@ public abstract class Level implements Disposable {
             iter.remove();
         }
 
-        renderer.dispose();
+        audioManager.stopTrack(getTrackName());
     }
 
     /**
@@ -81,4 +82,6 @@ public abstract class Level implements Disposable {
      * @return True if the game has just been completed
      */
     public abstract boolean isFinished();
+
+    public abstract String getTrackName();
 }
