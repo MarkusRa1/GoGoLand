@@ -18,6 +18,9 @@ import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
+/**
+ * Sets up and handles libgdx 3d graphics and initializes jBullet
+ */
 public class Graphics {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionDispatcher dispatcher;
@@ -26,6 +29,9 @@ public class Graphics {
     private Renderer renderer;
     private AudioManager audioManager;
 
+    /**
+     * Initializes libgdx and jBullet
+     */
     public Graphics() {
         Bullet.init();
 
@@ -55,6 +61,9 @@ public class Graphics {
         audioManager.preloadTracks("level1music.wav", "level2music.wav");
     }
 
+    /**
+     * Makes one step in the simulation
+     */
     public void render(float delta) {
         dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
 
@@ -69,6 +78,10 @@ public class Graphics {
         renderer.dispose();
     }
 
+    /**
+     * Creates all the models for the game and puts them in a model factory
+     * @return The factory
+     */
     private ModelFactory createModels() {
         ModelBuilder modelBuilder = new ModelBuilder();
         ModelFactory factory = new ModelFactory();

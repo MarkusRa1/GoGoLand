@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * An abstract class that provides functionality for the levels
+ */
 public abstract class Level implements Disposable {
     private final AudioManager audioManager;
     private btDiscreteDynamicsWorld dynamicsWorld;
@@ -25,10 +28,18 @@ public abstract class Level implements Disposable {
         audioManager.loopTrack(getTrackName());
     }
 
+    /**
+     * Renders the level
+     *
+     * @param delta Time since last frame
+     */
     public void render(float delta) {
         renderer.render(objects);
     }
 
+    /**
+     * Disposes the level
+     */
     public void dispose() {
         Iterator<GameObject> iter = objects.iterator();
 
@@ -42,6 +53,9 @@ public abstract class Level implements Disposable {
         audioManager.stopTrack(getTrackName());
     }
 
+    /**
+     * @return The cube that is being controlled by the sphero
+     */
     public abstract GameObject getCube();
 
     protected void addObject(GameObject object) {
@@ -64,6 +78,9 @@ public abstract class Level implements Disposable {
         renderer.setCameraPosition(newPos);
     }
 
+    /**
+     * @return True if the game has just been completed
+     */
     public abstract boolean isFinished();
 
     public abstract String getTrackName();

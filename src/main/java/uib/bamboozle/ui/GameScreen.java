@@ -11,6 +11,9 @@ import uib.bamboozle.levels.Level;
 import uib.bamboozle.levels.Level1;
 import uib.bamboozle.levels.Level2;
 
+/**
+ * The 3d game screen
+ */
 public class GameScreen implements Screen {
     private Graphics graphics;
     private Level level;
@@ -32,6 +35,9 @@ public class GameScreen implements Screen {
         nextLevel();
     }
 
+    /**
+     * Updates the cubes position and checks if the level is finished.
+     */
     @Override
     public void render(float delta) {
         graphics.render(delta);
@@ -62,6 +68,13 @@ public class GameScreen implements Screen {
         level.dispose();
     }
 
+    /**
+     * Makes the cubes rotation update gradually, making the movement smoother/
+     *
+     * @param oldf The previous rotation
+     * @param newf The new rotation
+     * @return An intermediate point between old and new
+     */
     private float gradualChangeToRollPitchOrYaw(float oldf, float newf) {
         float diff = Math.abs(newf - oldf);
         if (diff > 180)
@@ -69,6 +82,10 @@ public class GameScreen implements Screen {
         else
             return newf > oldf ? oldf + diff / 4: oldf - diff / 4;
     }
+
+    /**
+     * @return True if the user is pressing the escape key
+     */
     private boolean checkForPauseRequest() {
 		final boolean pause = Gdx.input.isKeyJustPressed(Keys.ESCAPE);
 		if (pause) {
@@ -77,8 +94,10 @@ public class GameScreen implements Screen {
 		return pause;
 	}
 
-
-    public void nextLevel() {
+    /**
+     * Starts the next level
+     */
+    private void nextLevel() {
         if(level != null) {
             level.dispose();
         }
@@ -88,6 +107,9 @@ public class GameScreen implements Screen {
         level = getLevel(++levelNum);
     }
 
+    /**
+     * Returns a new level instance
+     */
     private Level getLevel(int num) {
         switch (num) {
             case 1:
@@ -98,10 +120,14 @@ public class GameScreen implements Screen {
                 return null;
         }
     }
+
     public int getLevelNumber() {
     	return levelNum;
     }
 
+    /**
+     * Allows use of the arrow keys for testing
+     */
     private void cheat() {
         if(Gdx.input.isKeyPressed(Keys.LEFT)) {
             game.roll += 1;

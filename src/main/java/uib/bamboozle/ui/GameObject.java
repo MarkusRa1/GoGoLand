@@ -9,10 +9,21 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
 import com.badlogic.gdx.utils.Disposable;
 
+/**
+ * Represents an object in the 3d space
+ */
 public class GameObject implements Disposable {
     private ModelInstance instance;
     private btRigidBody body;
 
+    /**
+     * Creates an object
+     *
+     * @param model The libgdx model
+     * @param shape The jBullet shape
+     * @param pos Initial osition
+     * @param mass Mass
+     */
     GameObject(Model model, btCollisionShape shape, Vector3 pos, float mass) {
         instance = new ModelInstance(model, pos);
 
@@ -28,10 +39,16 @@ public class GameObject implements Disposable {
         body.proceedToTransform(instance.transform);
     }
 
+    /**
+     * @return The libgdx ModelInstance
+     */
     public ModelInstance getInstance() {
         return instance;
     }
 
+    /**
+     * @return The jBullet rigid body
+     */
     public btRigidBody getBody() {
         return body;
     }
@@ -41,6 +58,9 @@ public class GameObject implements Disposable {
     }
 }
 
+/**
+ * Called by jBullet when the position of the body changes. Updates the libgdx instance.
+ */
 class StandardMotionState extends btMotionState {
     private Matrix4 transform;
 

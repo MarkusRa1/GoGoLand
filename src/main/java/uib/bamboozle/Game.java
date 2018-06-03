@@ -30,6 +30,7 @@ public class Game extends com.badlogic.gdx.Game {
     private ReadFromGo reader;
     private boolean connected = false;
 
+
     public static void main(String[] arg) {
         
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
@@ -38,6 +39,9 @@ public class Game extends com.badlogic.gdx.Game {
         config.height = 720;
         new LwjglApplication(new Game(), config);
     }
+    /**
+     * Creates a new game
+     */
     public void create() {
         connect();
         batch = new SpriteBatch();
@@ -47,23 +51,42 @@ public class Game extends com.badlogic.gdx.Game {
 
         setScreen(mainMenuScreen);
     }
+    /**
+     * Returns the main menu screen
+     * @return The main menu screen
+     */
     public MainMenuScreen getMainMenuScreen() {
         return mainMenuScreen;
     }
+    /**
+     * Returns the main menu screen
+     *
+     * @return The main menu screen
+     */
     public PauseMenuScreen getPauseMenuScreen() {
     	return pauseMenuScreen;
     }
+    /**
+     * Returns the pause menu screen
+     *
+     * @return The pause menu screen
+     */
     public GameScreen getGameScreen() {
     	return gameScreen;
     }
-    public String getTitle() {
-        return TITLE;
-    }
+    /**
+     * Starts a new game
+     *
+     * @return The main menu screen
+     */
     public GameScreen newGame() {
         gameScreen = new GameScreen(this);
         return gameScreen;
     }
 
+    /**
+     * Connects to the go server
+     */
     public void connect() {
         System.out.println("connect()");
         if (reader == null) {
@@ -81,6 +104,9 @@ public class Game extends com.badlogic.gdx.Game {
         }
     }
 
+    /**
+     * Disconnects from the go server
+     */
     public void disconnect() {
         if(reader != null){
             reader.stop();
@@ -88,14 +114,28 @@ public class Game extends com.badlogic.gdx.Game {
 
     }
 
+    /**
+     * Sets the connected flag
+     *
+     * @param c The flag
+     */
     public void setConnected(boolean c) {
         this.connected = c;
     }
 
+
+    /**
+     * Returns the connected flag
+     *
+     * @return The flag
+     */
     public boolean isConnected() {
         return connected;
     }
 
+    /**
+     * Disposes the whole game
+     */
     @Override
     public void dispose() {
         disconnect();
