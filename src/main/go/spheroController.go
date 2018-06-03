@@ -98,6 +98,7 @@ func tcpConnect() {
 
 func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	var adaptor *sphero.Adaptor
+	status.Os = runtime.GOOS
 	switch runtime.GOOS {
 	case "windows":
 		prt := "COM6"
