@@ -29,8 +29,6 @@ var tcpconn net.Conn = nil
 var udpconn net.Conn = nil
 var ln net.Listener = nil
 
-
-
 var robot *gobot.Robot = nil
 
 var incomingCommand = make(chan SpheroCommand)
