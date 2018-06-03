@@ -228,6 +228,19 @@ public class ReadFromGo implements Runnable {
         game.setConnected(false);
     }
 
+    /**
+     * Changes the COM port with which Gobot connects to sphero
+     * @param port The port, including COM
+     */
+    public void setComPort(String port) {
+        try {
+            if(outToServer != null)
+                outToServer.writeBytes(port + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void connect() {
         try {
             outToServer.writeBytes("Connect\n");
