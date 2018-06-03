@@ -4,20 +4,26 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import uib.bamboozle.Game;
+import uib.bamboozle.ui.AudioManager;
 import uib.bamboozle.ui.GameObject;
 import uib.bamboozle.ui.Graphics;
 
 public class Level1 extends Level {
     private GameObject cube;
     private GameObject ball;
+    private GameObject goal;
 
-    public Level1(Graphics graphics) {
-        super(graphics);
+    public Level1(Graphics graphics, AudioManager audioManager) {
+        super(graphics, audioManager);
 
-        cube = getModelFactory().get("cube", new Vector3(0f, 0f, 0f), 0f);
+        cube = getModelFactory().get("level1", new Vector3(0f, 0f, 0f), 0f);
         cube.getBody().setCollisionFlags(cube.getBody().getCollisionFlags()
                 | btCollisionObject.CollisionFlags.CF_KINEMATIC_OBJECT);
         addObject(cube);
+
+        goal = getModelFactory().get("goal", new Vector3(8.7f, -1f, 1f), 0f);
+        addObject(goal);
     }
 
     @Override
@@ -27,7 +33,7 @@ public class Level1 extends Level {
                 removeObject(ball);
             }
 
-            ball = getModelFactory().get("ball", new Vector3(0f, 5f, 0f), 0.25f);
+            ball = getModelFactory().get("ball", new Vector3(-4f, 5f, 0f), 0.25f);
             addObject(ball);
         }
 
@@ -36,8 +42,8 @@ public class Level1 extends Level {
 
     public boolean isFinished() {
         if(ball != null) {
-            Vector3 pos = ball.getInstance().transform.getTranslation(new Vector3());
-            return pos.len() > 5;
+            Vector3 dist = goal.getInstance().transform.getTranslation(new Vector3()).sub(ball.getInstance().transform.getTranslation(new Vector3()));
+            return dist.len() < 1.5;
         } else {
             return false;
         }
@@ -45,5 +51,9 @@ public class Level1 extends Level {
 
     public GameObject getCube() {
         return cube;
+    }
+
+    public String getTrackName() {
+        return "level1music.wav";
     }
 }

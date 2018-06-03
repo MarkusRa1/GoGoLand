@@ -1,3 +1,6 @@
+dist/
+node_modules/
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -161,3 +164,4 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+/JavaDoc/

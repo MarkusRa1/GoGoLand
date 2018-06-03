@@ -14,9 +14,18 @@ import com.badlogic.gdx.utils.Disposable;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Holds a list of all the models and rigid bodies that have been created
+ */
 public class ModelFactory implements Disposable {
     private Map<String, ObjectModel> models = new HashMap<>();
 
+    /**
+     * Adds a new model
+     * @param name Name of the model
+     * @param model The model
+     * @param shape The jBullet shape. Is this is null, a shape will be created automatically
+     */
     public void add(String name, Model model, btCollisionShape shape) {
         if(shape == null) {
             shape = createShape(model);
@@ -25,6 +34,9 @@ public class ModelFactory implements Disposable {
         models.put(name, new ObjectModel(model, shape));
     }
 
+    /**
+     * Returns a new game object at the desired position
+     */
     public GameObject get(String name, Vector3 pos, float mass) {
         ObjectModel om = models.get(name);
         return new GameObject(om.model, om.shape, pos, mass);

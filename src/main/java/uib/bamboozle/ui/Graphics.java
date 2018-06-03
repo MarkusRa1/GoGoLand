@@ -18,13 +18,20 @@ import com.badlogic.gdx.physics.bullet.collision.*;
 import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btSequentialImpulseConstraintSolver;
 
+/**
+ * Sets up and handles libgdx 3d graphics and initializes jBullet
+ */
 public class Graphics {
     private btDefaultCollisionConfiguration collisionConfig;
     private btCollisionDispatcher dispatcher;
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
     private Renderer renderer;
+    private AudioManager audioManager;
 
+    /**
+     * Initializes libgdx and jBullet
+     */
     public Graphics() {
         Bullet.init();
 
@@ -49,8 +56,14 @@ public class Graphics {
 
         modelFactory = createModels();
         renderer = new Renderer(cam, environment, modelBatch);
+
+        audioManager = new AudioManager();
+        audioManager.preloadTracks("level1music.wav", "level2music.wav");
     }
 
+    /**
+     * Makes one step in the simulation
+     */
     public void render(float delta) {
         dynamicsWorld.stepSimulation(delta, 5, 1f / 60f);
 
@@ -62,8 +75,13 @@ public class Graphics {
         dispatcher.dispose();
         collisionConfig.dispose();
         modelFactory.dispose();
+        renderer.dispose();
     }
 
+    /**
+     * Creates all the models for the game and puts them in a model factory
+     * @return The factory
+     */
     private ModelFactory createModels() {
         ModelBuilder modelBuilder = new ModelBuilder();
         ModelFactory factory = new ModelFactory();
@@ -89,8 +107,16 @@ public class Graphics {
 
         factory.add("cube", modelBuilder.end(), null);
 
-        Model planeModel = loader.loadModel(Gdx.files.internal("level2.obj"));
-        factory.add("level2", planeModel, null);
+        Model level1 = loader.loadModel(Gdx.files.internal("level1.obj"));
+        factory.add("level1", level1, null);
+
+        Model level2 = loader.loadModel(Gdx.files.internal("level2.obj"));
+        factory.add("level2", level2, null);
+
+        Model goal = modelBuilder.createBox(2f, 0.5f, 2f,
+                new Material(ColorAttribute.createDiffuse(Color.GREEN)),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal);
+        factory.add("goal", goal, null);
 
         Model ballModel = modelBuilder.createSphere(2f, 2f, 2f, 24, 24,
                 new Material(ColorAttribute.createDiffuse(Color.ORANGE)),
@@ -110,5 +136,9 @@ public class Graphics {
 
     public ModelFactory getModelFactory() {
         return modelFactory;
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
     }
 }

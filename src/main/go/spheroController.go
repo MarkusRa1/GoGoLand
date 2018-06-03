@@ -17,6 +17,7 @@ import (
 
 var stop = false
 var spheroConnectedOrTrying = false
+var comPort = "COM6"
 var dontCloseWhenJavaClose = true
 var lostConnection = false
 var tcpConnected = false
@@ -101,9 +102,8 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	status.Os = runtime.GOOS
 	switch runtime.GOOS {
 	case "windows":
-		prt := "COM6"
-		adaptor = sphero.NewAdaptor(prt)
-		status.Port = prt
+		adaptor = sphero.NewAdaptor(comPort)
+		status.Port = comPort
 	case "darwin":
 		//op, _ := exec.Command("/bin/sh", "./findspheromac.sh").Output()
 		adaptor = sphero.NewAdaptor("/dev/" + "tty.Sphero-GWG-AMP-SPP" /*strings.TrimRight(string(op), "\n")*/)
@@ -227,6 +227,10 @@ func feedBack() {
 				<-readyToRestartSpheroConnection
 			}
 			go sendData()
+		}
+		if strings.ContainsAny(message, "COM") {
+			comPort = strings.Trim(message, "\n")
+			incomingCommand<-SpheroCommand{"Connect", 0}
 		}
 	}
 }
