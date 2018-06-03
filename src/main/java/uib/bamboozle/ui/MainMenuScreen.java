@@ -19,6 +19,9 @@ import uib.bamboozle.Game;
  */
 public class MainMenuScreen extends Menu implements Screen {
     //Name of Pictures
+
+    private static final String CONNECTED = "button_connected.png";
+    private static final String NOTCONNECTED = "button_not-connected.png";
 	private static final String PLAY = "buttons/button_play.png";
     private static final String BACKGROUND = "buttons/bg4.jpg";
     private static final String EXIT = "buttons/button_quit.png";
@@ -28,8 +31,12 @@ public class MainMenuScreen extends Menu implements Screen {
     //Graphics for mainmenu
     ParallaxBackground parallaxBackground;
     private Table table;
-   
-    
+    private Table topRightTable;
+
+    private Button connectedButton;
+    private ImageButton.ImageButtonStyle cStyle = new ImageButton.ImageButtonStyle();
+    private ImageButton.ImageButtonStyle ncStyle = new ImageButton.ImageButtonStyle();
+
     private Button connectButton;
     private ImageButton.ImageButtonStyle connectedStyle = new ImageButton.ImageButtonStyle();
     private ImageButton.ImageButtonStyle disconnectedStyle = new ImageButton.ImageButtonStyle();
@@ -37,6 +44,7 @@ public class MainMenuScreen extends Menu implements Screen {
     public MainMenuScreen(Game game) {
     	super(game);
         table = new Table();
+        topRightTable = new Table();
         
         //parallax background, for more advanced add pictures to Background and loop them
         Array<Texture> textures = new Array<Texture>();
@@ -55,12 +63,14 @@ public class MainMenuScreen extends Menu implements Screen {
         AnimatedActor bb8 = new AnimatedActor(bb8Animate);
         bb8.setPosition(350, 150);
         getStage().addActor(bb8);
-        
+
         createButtons();
         //table.setDebug(true);
         table.setFillParent(true);
+        //topRightTable.setDebug(true);
+        topRightTable.setFillParent(true);
         getStage().addActor(table);
-
+        getStage().addActor(topRightTable);
     }
 
     
@@ -84,6 +94,13 @@ public class MainMenuScreen extends Menu implements Screen {
             table.row();
         }
 
+
+        topRightTable.top().right();
+        topRightTable.row();
+        cStyle.imageUp = createImage(CONNECTED);
+        ncStyle.imageUp = createImage(NOTCONNECTED);
+        connectedButton = createButton(NOTCONNECTED, null, this);
+        topRightTable.add(connectedButton).width((float) (connectedButton.getWidth())).height((float) (connectedButton.getHeight()));
     }
     
     @Override
@@ -93,6 +110,14 @@ public class MainMenuScreen extends Menu implements Screen {
         } else {
             connectButton.setStyle(connectedStyle);
         }
+
+        if (game.isConnected()) {
+            connectedButton.setStyle(cStyle);
+        } else {
+            connectedButton.setStyle(ncStyle);
+        }
+
+
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
