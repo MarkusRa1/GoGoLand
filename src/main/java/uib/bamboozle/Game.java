@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import uib.bamboozle.communication.ReadFromGo;
+import uib.bamboozle.ui.CompleteLevelScreen;
 import uib.bamboozle.ui.GameScreen;
 import uib.bamboozle.ui.MainMenuScreen;
 import uib.bamboozle.ui.PauseMenuScreen;
@@ -142,7 +143,11 @@ public class Game extends com.badlogic.gdx.Game {
     }
 
     public void levelComplete() {
-        //setScreen(new CompleteLevelScreen(this));
+        //if(gameScreen.getLevelNumber() != GameScreen.NUM_LEVELS) {
+            setScreen(new CompleteLevelScreen(this));
+        //} else {
+
+        //}
     }
 
     public void nextLevel() {

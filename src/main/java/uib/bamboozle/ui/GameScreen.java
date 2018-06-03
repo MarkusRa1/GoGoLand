@@ -15,6 +15,8 @@ import uib.bamboozle.levels.Level2;
  * The 3d game screen
  */
 public class GameScreen implements Screen {
+    public static final int NUM_LEVELS = 2;
+
     private Graphics graphics;
     private Level level;
     private Game game;
