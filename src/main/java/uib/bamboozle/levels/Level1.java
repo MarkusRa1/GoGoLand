@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import uib.bamboozle.Game;
+import uib.bamboozle.ui.AudioManager;
 import uib.bamboozle.ui.GameObject;
 import uib.bamboozle.ui.Graphics;
 
@@ -13,8 +14,8 @@ public class Level1 extends Level {
     private GameObject ball;
     private GameObject goal;
 
-    public Level1(Graphics graphics) {
-        super(graphics);
+    public Level1(Graphics graphics, AudioManager audioManager) {
+        super(graphics, audioManager);
 
         cube = getModelFactory().get("level1", new Vector3(0f, 0f, 0f), 0f);
         cube.getBody().setCollisionFlags(cube.getBody().getCollisionFlags()
