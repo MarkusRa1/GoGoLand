@@ -65,8 +65,7 @@ public class MainMenuScreen extends Menu implements Screen {
         //table.setDebug(true);
         table.setFillParent(true);
         getStage().addActor(table);
-        
-        
+
     }
 
     
@@ -104,6 +103,16 @@ public class MainMenuScreen extends Menu implements Screen {
         stage.draw();
     }
 
+    @Override
+    public void show() {
+        game.getAudioManager().loopTrack("level2music.wav");
+        super.show();
+    }
 
+    @Override
+    public void hide() {
+        game.getAudioManager().stopTrack("level2music.wav");
+        super.hide();
+    }
 
 }

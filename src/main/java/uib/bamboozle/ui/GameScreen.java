@@ -115,9 +115,9 @@ public class GameScreen implements Screen {
     private Level getLevel(int num) {
         switch (num) {
             case 1:
-                return new Level1(graphics);
+                return new Level1(graphics, game.getAudioManager());
             case 2:
-                return new Level2(graphics);
+                return new Level2(graphics, game.getAudioManager());
             default:
                 return null;
         }
