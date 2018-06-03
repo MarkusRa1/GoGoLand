@@ -13,6 +13,7 @@ public class Game extends com.badlogic.gdx.Game {
     private MainMenuScreen mainMenuScreen;
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
+    private SettingsScreen settingsScreen;
     private Thread readerThread;
 
     private AudioManager audioManager = new AudioManager();
@@ -50,6 +51,7 @@ public class Game extends com.badlogic.gdx.Game {
 
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
+        settingsScreen = new SettingsScreen(this);
 
         setScreen(mainMenuScreen);
     }
@@ -79,6 +81,15 @@ public class Game extends com.badlogic.gdx.Game {
      */
     public GameScreen getGameScreen() {
         return gameScreen;
+    }
+    
+    /**
+     * Returns the settings screen
+     *
+     * @return The settings screen
+     */
+    public SettingsScreen getSettingsScreen() {
+        return settingsScreen;
     }
 
     /**

@@ -19,8 +19,6 @@ public class PauseMenuScreen extends Menu implements Screen {
     private final String PAUSE = "buttons/button_paused.png";
     private final String RESUME = "buttons/button_resume.png";
     private final String EXIT = "buttons/button_quit.png";
-
-    private Table table;
     private ImageButton pauseButton;
     private Array<Button> buttons;
     
@@ -28,9 +26,14 @@ public class PauseMenuScreen extends Menu implements Screen {
     
     public PauseMenuScreen(Game game) {
         super(game);
+        
+        parallaxBackground();
+		getStage().addActor(table);
 
-        table = new Table();
 
+    }
+    
+    public void createButtons() {
         pauseButton = createButton(PAUSE, null);
 
         buttons = new Array<Button>();
@@ -38,17 +41,14 @@ public class PauseMenuScreen extends Menu implements Screen {
         buttons.add(createButton(EXIT, this::exitToMainMenu));
 
         table.add(pauseButton).pad(0, 0, 400, 0);
-		table.row();
-		table.pad(50);
-		for (Button button : buttons) {
-			table.add(button).width((float) (button.getWidth() / 2)).height((float) (button.getHeight() / 2)).pad(5);
-			table.row();
-		}
-		table.center();
-		table.setFillParent(true);
-		getStage().addActor(table);
-
-
+        table.row();
+        table.pad(50);
+        for (Button button : buttons) {
+            table.add(button).width((float) (button.getWidth() / 2)).height((float) (button.getHeight() / 2)).pad(5);
+            table.row();
+            table.center();
+            table.setFillParent(true);
+        }
     }
 
     @Override

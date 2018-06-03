@@ -5,18 +5,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
 
 import uib.bamboozle.Game;
 
@@ -24,51 +22,66 @@ import uib.bamboozle.Game;
  * An abstract class implementing a lot of shared menu screen functionality
  */
 public abstract class Menu implements Screen {
-	
-	protected Stage stage;
-	protected Game game;
+
+    protected Stage stage;
+    protected Game game;
+    protected Table table;
+    
+    ParallaxBackground parallaxBackground;
+    private static final String BACKGROUND = "buttons/bg4.jpg";
 
     public Menu(Game game) {
-    	this.game = game;
+        this.game = game;
         stage = new Stage(new FitViewport(1920, 1080));
+        table = new Table();
     }
+
     @Override
     public void hide() {
         Gdx.input.setInputProcessor(null);
-        
+
     }
+
     @Override
     public void show() {
-    	Gdx.input.setInputProcessor(stage);        
+        Gdx.input.setInputProcessor(stage);
     }
+
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
-        
+
     }
 
     /**
      * Creates a new button and adds a listener
-     * @param imageString The name of the image file
-     * @param target The method to be called on click
+     * 
+     * @param imageString
+     *            The name of the image file
+     * @param target
+     *            The method to be called on click
      * @return The button
      */
     protected ImageButton createButton(String imageString, Runnable target) {
         ImageButton button = new ImageButton(createImage(imageString));
-        if(target != null)
+        if (target != null)
             addButtonListener(button, target);
         return button;
     }
 
     /**
      * Creates a new button with several different possible images
-     * @param upImage The name of the normal image
-     * @param downImage The name of the image once the button is clicked.
-     * @param target The method to be called on click
+     * 
+     * @param upImage
+     *            The name of the normal image
+     * @param downImage
+     *            The name of the image once the button is clicked.
+     * @param target
+     *            The method to be called on click
      * @return The button
      */
     protected ImageButton createButton(String upImage, String downImage, String checkedImage, Runnable target) {
         ImageButton button = new ImageButton(createImage(upImage), createImage(downImage), createImage(checkedImage));
-        if(target != null)
+        if (target != null)
             addButtonListener(button, target);
         return button;
     }
@@ -89,11 +102,13 @@ public abstract class Menu implements Screen {
 
     /**
      * Adds a listener to a button
-     * @param button The button
-     * @param target The function to be called on click
+     * 
+     * @param button
+     *            The button
+     * @param target
+     *            The function to be called on click
      */
     public void addButtonListener(Button button, Runnable target) {
-        
 
         button.addListener(new InputListener() {
             @Override
@@ -112,24 +127,36 @@ public abstract class Menu implements Screen {
             }
         });
     }
+
     public Game getGame() {
         return game;
     }
+
     public Stage getStage() {
         return stage;
     }
 
-	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		
-	}
-    @Override
-    public void pause() {
-        // TODO Auto-generated method stub
-        
+    public void parallaxBackground() {
+        Array<Texture> textures = new Array<Texture>();
+        textures.add(new Texture(Gdx.files.internal("Background/bg4.png")));
+        textures.get(textures.size - 1).setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
+        parallaxBackground = new ParallaxBackground(textures, stage.getWidth(), stage.getHeight(), 1);
+        getStage().addActor(parallaxBackground);
     }
 
     @Override
-    public void resume() {}
+    public void dispose() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void resume() {
+    }
 }

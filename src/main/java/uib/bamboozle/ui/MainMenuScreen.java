@@ -23,15 +23,12 @@ public class MainMenuScreen extends Menu implements Screen {
     private static final String CONNECTED = "button_connected.png";
     private static final String NOTCONNECTED = "button_not-connected.png";
 	private static final String PLAY = "buttons/button_play.png";
-    private static final String BACKGROUND = "buttons/bg4.jpg";
     private static final String EXIT = "buttons/button_quit.png";
     private static final String CONNECT = "buttons/button_connect.png";
     private static final String DISCONNECT = "buttons/button_disconnect.png";
     private static final String SETTINGS = "buttons/button_settings.png";
     
     //Graphics for mainmenu
-    ParallaxBackground parallaxBackground;
-    private Table table;
     private Table topRightTable;
 
     private Button connectedButton;
@@ -44,22 +41,16 @@ public class MainMenuScreen extends Menu implements Screen {
     
     public MainMenuScreen(Game game) {
     	super(game);
-        table = new Table();
         topRightTable = new Table();
         
         //parallax background, for more advanced add pictures to Background and loop them
-        Array<Texture> textures = new Array<Texture>();
-          textures.add(new Texture(Gdx.files.internal("Background/bg4.png")));
-          textures.get(textures.size-1).setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
-        parallaxBackground = new ParallaxBackground(textures, stage.getWidth(), stage.getHeight(), 1);
-        getStage().addActor(parallaxBackground);
+        parallaxBackground();
         
         //BB8 animation
         Array<TextureRegion> bb8footage = new Array<TextureRegion>();
         for(int i = 0; i<=22 ; i ++) {
         	bb8footage.add(new TextureRegion(new Texture(Gdx.files.internal("bb8/" + i +".png"))));
         }
-        System.out.println(bb8footage.size);
         Animation<TextureRegion> bb8Animate = new Animation<TextureRegion>(0.0001f , bb8footage, PlayMode.LOOP);
         AnimatedActor bb8 = new AnimatedActor(bb8Animate);
         bb8.setPosition(350, 150);
@@ -84,6 +75,7 @@ public class MainMenuScreen extends Menu implements Screen {
         Array<Button> buttons = new Array<>();
 
         buttons.add(createButton(PLAY, this::newGame));
+        buttons.add(createButton(SETTINGS, this::settings));
         buttons.add(connectButton);
         buttons.add(createButton(EXIT, this::exitGame));
 
@@ -126,6 +118,10 @@ public class MainMenuScreen extends Menu implements Screen {
 
     public void exitGame() {
         Gdx.app.exit();
+    }
+    public void settings() {
+        
+        game.setScreen(game.getSettingsScreen());
     }
     public void newGame() {
         game.setScreen(game.newGame());
