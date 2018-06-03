@@ -19,11 +19,11 @@ import uib.bamboozle.Game;
  */
 public class MainMenuScreen extends Menu implements Screen {
     //Name of Pictures
-	private static final String PLAY = "Play2.png";
-    private static final String BACKGROUND = "bg2.jpg";
-    private static final String EXIT = "bs_quit.png";
-    private static final String CONNECT = "connect.png";
-    private static final String DISCONNECT = "disconnect.png";
+	private static final String PLAY = "buttons/button_play.png";
+    private static final String BACKGROUND = "buttons/bg4.jpg";
+    private static final String EXIT = "buttons/button_quit.png";
+    private static final String CONNECT = "buttons/button_connect.png";
+    private static final String DISCONNECT = "buttons/button_disconnect.png";
 
     //Name for switch case methods
     private final String newGame = "newGame";
@@ -81,11 +81,11 @@ public class MainMenuScreen extends Menu implements Screen {
         buttons.add(connectButton);
         buttons.add(createButton(EXIT, exit, this));
 
-        table.center();
+        table.setPosition(stage.getWidth()/10 - 200, stage.getHeight()/10 +200);;
 
         table.row();
         for (Button but : buttons) {
-            table.add(but).width((float) (but.getWidth() / 4)).height((float) (but.getHeight() / 4)).pad(5);
+            table.add(but).width((float) (but.getWidth() / 2)).height((float) (but.getHeight() / 2)).pad(5);
             table.row();
         }
 

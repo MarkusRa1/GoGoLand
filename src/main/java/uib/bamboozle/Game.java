@@ -9,7 +9,7 @@ import uib.bamboozle.communication.ReadFromGo;
 import uib.bamboozle.ui.*;
 
 public class Game extends com.badlogic.gdx.Game {
-    //scenes
+    // scenes
     private MainMenuScreen mainMenuScreen;
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
@@ -27,15 +27,15 @@ public class Game extends com.badlogic.gdx.Game {
     private ReadFromGo reader;
     private boolean connected = false;
 
-
     public static void main(String[] arg) {
-        
+
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         config.title = "GoGoLand";
         config.width = 1280;
         config.height = 720;
         new LwjglApplication(new Game(), config);
     }
+
     /**
      * Creates a new game
      */
@@ -51,29 +51,34 @@ public class Game extends com.badlogic.gdx.Game {
 
         setScreen(mainMenuScreen);
     }
+
     /**
      * Returns the main menu screen
+     * 
      * @return The main menu screen
      */
     public MainMenuScreen getMainMenuScreen() {
         return mainMenuScreen;
     }
+
     /**
      * Returns the main menu screen
      *
      * @return The main menu screen
      */
     public PauseMenuScreen getPauseMenuScreen() {
-    	return pauseMenuScreen;
+        return pauseMenuScreen;
     }
+
     /**
      * Returns the pause menu screen
      *
      * @return The pause menu screen
      */
     public GameScreen getGameScreen() {
-    	return gameScreen;
+        return gameScreen;
     }
+
     /**
      * Starts a new game
      *
@@ -88,27 +93,27 @@ public class Game extends com.badlogic.gdx.Game {
      * Connects to the go server
      */
     public void connect() {
-        System.out.println("connect()");
-        if (reader == null) {
-            reader = new ReadFromGo(this);
-            readerThread = new Thread(reader);
-            readerThread.start();
-        } else {
-            reader.connect();
-            if (readerThread != null) {
-                readerThread.interrupt();
-                readerThread = new Thread(reader);
-                readerThread.start();
-                System.out.println("Thread interrupted and started");
-            }
-        }
+        // System.out.println("connect()");
+        // if (reader == null) {
+        // reader = new ReadFromGo(this);
+        // readerThread = new Thread(reader);
+        // readerThread.start();
+        // } else {
+        // reader.connect();
+        // if (readerThread != null) {
+        // readerThread.interrupt();
+        // readerThread = new Thread(reader);
+        // readerThread.start();
+        // System.out.println("Thread interrupted and started");
+        // }
+        // }
     }
 
     /**
      * Disconnects from the go server
      */
     public void disconnect() {
-        if(reader != null){
+        if (reader != null) {
             reader.stop();
         }
 
@@ -117,12 +122,12 @@ public class Game extends com.badlogic.gdx.Game {
     /**
      * Sets the connected flag
      *
-     * @param c The flag
+     * @param c
+     *            The flag
      */
     public void setConnected(boolean c) {
         this.connected = c;
     }
-
 
     /**
      * Returns the connected flag
@@ -139,17 +144,19 @@ public class Game extends com.badlogic.gdx.Game {
     @Override
     public void dispose() {
         disconnect();
-        if(gameScreen != null) gameScreen.dispose();
-        if(mainMenuScreen != null)  mainMenuScreen.dispose();
+        if (gameScreen != null)
+            gameScreen.dispose();
+        if (mainMenuScreen != null)
+            mainMenuScreen.dispose();
 
     }
 
     public void levelComplete() {
-        //if(gameScreen.getLevelNumber() != GameScreen.NUM_LEVELS) {
-            setScreen(new CompleteLevelScreen(this));
-        //} else {
+        // if(gameScreen.getLevelNumber() != GameScreen.NUM_LEVELS) {
+        setScreen(new CompleteLevelScreen(this));
+        // } else {
 
-        //}
+        // }
     }
 
     public void nextLevel() {
