@@ -27,6 +27,7 @@ public class MainMenuScreen extends Menu implements Screen {
     private static final String EXIT = "buttons/button_quit.png";
     private static final String CONNECT = "buttons/button_connect.png";
     private static final String DISCONNECT = "buttons/button_disconnect.png";
+    private static final String SETTINGS = "buttons/button_settings.png";
     
     //Graphics for mainmenu
     ParallaxBackground parallaxBackground;
