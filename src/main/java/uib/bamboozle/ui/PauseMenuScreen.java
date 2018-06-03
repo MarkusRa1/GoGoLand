@@ -19,11 +19,6 @@ public class PauseMenuScreen extends Menu implements Screen {
     private final String PAUSE = "buttons/button_paused.png";
     private final String RESUME = "buttons/button_resume.png";
     private final String EXIT = "buttons/button_quit.png";
-    
-    //Name for switch case methods
-    private final String resume = "resumeGame";
-    private final String exit = "exitToMainMenu";
-    
 
     private Table table;
     private ImageButton pauseButton;
@@ -36,11 +31,11 @@ public class PauseMenuScreen extends Menu implements Screen {
 
         table = new Table();
 
-        pauseButton = createButton(PAUSE, null, this);
+        pauseButton = createButton(PAUSE, null);
 
         buttons = new Array<Button>();
-        buttons.add(createButton(RESUME, resume, this));
-        buttons.add(createButton(EXIT, exit, this));
+        buttons.add(createButton(RESUME, this::resumeGame));
+        buttons.add(createButton(EXIT, this::exitToMainMenu));
 
         table.add(pauseButton).pad(0, 0, 400, 0);
 		table.row();
@@ -74,4 +69,11 @@ public class PauseMenuScreen extends Menu implements Screen {
 
 	}
 
+    public void resumeGame() {
+        game.setScreen(game.getGameScreen());
+
+    }
+    public void exitToMainMenu() {
+        game.setScreen(game.getMainMenuScreen());
+    }
 }

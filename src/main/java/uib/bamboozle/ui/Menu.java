@@ -46,14 +46,13 @@ public abstract class Menu implements Screen {
     /**
      * Creates a new button and adds a listener
      * @param imageString The name of the image file
-     * @param target The name of the method to be called on click
-     * @param menu A reference to the menu instance
+     * @param target The method to be called on click
      * @return The button
      */
-    protected ImageButton createButton(String imageString, String target, Menu menu) {
+    protected ImageButton createButton(String imageString, Runnable target) {
         ImageButton button = new ImageButton(createImage(imageString));
         if(target != null)
-            addButtonListener(button, target, menu);
+            addButtonListener(button, target);
         return button;
     }
 
@@ -61,14 +60,13 @@ public abstract class Menu implements Screen {
      * Creates a new button with several different possible images
      * @param upImage The name of the normal image
      * @param downImage The name of the image once the button is clicked.
-     * @param target The name of the method to be called on click
-     * @param menu A reference to the menu instance
+     * @param target The method to be called on click
      * @return The button
      */
-    protected ImageButton createButton(String upImage, String downImage, String checkedImage, String target, Menu menu) {
+    protected ImageButton createButton(String upImage, String downImage, String checkedImage, Runnable target) {
         ImageButton button = new ImageButton(createImage(upImage), createImage(downImage), createImage(checkedImage));
         if(target != null)
-            addButtonListener(button, target, menu);
+            addButtonListener(button, target);
         return button;
     }
 
@@ -85,9 +83,8 @@ public abstract class Menu implements Screen {
      * Adds a listener to a button
      * @param button The button
      * @param target The function to be called on click
-     * @param menu The instance of the menu class
      */
-    public void addButtonListener(Button button, String target, Menu menu) {
+    public void addButtonListener(Button button, Runnable target) {
         
 
         button.addListener(new InputListener() {
@@ -102,26 +99,7 @@ public abstract class Menu implements Screen {
                 Vector2 mouse = eventStage.screenToStageCoordinates(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
 
                 if (eventStage.hit(mouse.x, mouse.y, true) == event.getTarget()) {
-                    switch (target) {
-                        case "newGame":
-                            menu.newGame();
-                            break;
-                        case "connect":
-                            menu.connect();
-                            break;
-                        case "exitGame":
-                            menu.exitGame();
-                            break;
-                        case "resumeGame":
-                        	menu.resume();
-                        	break;
-                        case "exitToMainMenu":
-                        	menu.exitToMainMenu();
-                        	break;
-                        case "next":
-                            menu.next();
-                            break;
-                    }
+                    target.run();
                 }
             }
         });
@@ -132,31 +110,7 @@ public abstract class Menu implements Screen {
     public Stage getStage() {
         return stage;
     }
-    public void exitGame() {
-		Gdx.app.exit();
-	}
-    public void newGame() {
-        game.setScreen(game.newGame());
-    }
-	@Override
-	public void resume() {
-		game.setScreen(game.getGameScreen());
-		
-	}
-    public void exitToMainMenu() {
-    	game.setScreen(game.getMainMenuScreen());
-    }
-    public void connect() {
-        if(!game.isConnected()) {
-            game.connect();
-        } else {
-            game.disconnect();
-        }
-    }
 
-    public void next() {
-        game.nextLevel();
-    }
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
@@ -167,4 +121,7 @@ public abstract class Menu implements Screen {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public void resume() {}
 }
