@@ -8,8 +8,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.Buffer;
-import java.util.Arrays;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
 
@@ -19,6 +17,8 @@ public class ReadFromGo implements Runnable {
     private boolean stop = false;
     private boolean isMonitoring = false;
 
+    private String comPort = "";
+
     Socket clientSocket = null;
     DatagramSocket udpSocket = null;
     byte[] receiveData = new byte[1024];
@@ -27,6 +27,8 @@ public class ReadFromGo implements Runnable {
     private Game game;
     private static final int MAX_PORT_NUMBER = 65535;
     private static final int MIN_PORT_NUMBER = 0;
+
+    private Thread goProc;
 
     private boolean goServerRunning = false;
 
@@ -88,48 +90,24 @@ public class ReadFromGo implements Runnable {
         boolean connected = false;
         BufferedReader inFromServer = null;
         Future<String> future = null;
-        Thread t;
+        Thread t = null;
 
         while (!connected) {
             try {
-                if (available(preferredPort)) {
-                    ProcessBuilder ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", "" + preferredPort);
-                    ps.redirectErrorStream(true);
-                    Process pr = ps.start();
-                    System.out.println("Started Go");
-                    BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-                    Runnable task1 = new Runnable(){
-                        @Override
-                        public void run(){
-                            try {
-                                String line;
-                                while ((line = in.readLine()) != null) {
-                                    System.out.println(line);
-                                    if (line.compareTo("Launching server...") == 0)
-                                        goServerRunning = true;
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
-                    t = new Thread(task1);
-                    t.start();
-                } else {
-                    System.out.println("busy port " + preferredPort);
-                    goServerRunning = true;
-                }
+                startGoProcess(t, preferredPort);
 
                 while(!goServerRunning) {
                     Thread.sleep(200);
                 }
 
-                udpSocket = new DatagramSocket(preferredPort);
+                if (udpSocket == null || udpSocket.getPort() != preferredPort || udpSocket.isClosed())
+                    udpSocket = new DatagramSocket(preferredPort);
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 
                 TimeUnit.SECONDS.sleep(1);
-                clientSocket = new Socket("localhost", preferredPort);
+                if (clientSocket == null || clientSocket.getPort() != preferredPort || clientSocket.isClosed());
+                    clientSocket = new Socket("localhost", preferredPort);
                 outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
                 outToServer.writeBytes("Hello Go Beep Boop\n");
@@ -167,6 +145,42 @@ public class ReadFromGo implements Runnable {
         return inFromServer;
     }
 
+    public void startGoProcess(Thread t, int preferredPort) throws IOException {
+        if (available(preferredPort)) {
+            ProcessBuilder ps;
+            if (comPort != "")
+                ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", comPort, "" + preferredPort);
+            else
+                ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", "" + preferredPort);
+            System.out.println("comPort: " + comPort);
+            ps.redirectErrorStream(true);
+            Process pr = ps.start();
+            System.out.println("Started Go");
+            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            Runnable task1 = new Runnable(){
+                @Override
+                public void run(){
+                    try {
+                        System.out.println("yoo");
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            System.out.println(line);
+                            if (line.compareTo("Launching server...") == 0)
+                                goServerRunning = true;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+            t = new Thread(task1);
+            t.start();
+        } else {
+            System.out.println("busy port " + preferredPort);
+            goServerRunning = true;
+        }
+    }
+
     /**
      * Checks if there is a server on the port
      * @param port the port number to be checked
@@ -182,8 +196,6 @@ public class ReadFromGo implements Runnable {
         try {
             ss = new ServerSocket(port);
             ss.setReuseAddress(true);
-            ds = new DatagramSocket(port);
-            ds.setReuseAddress(true);
             return true;
         } catch (IOException e) {
         } finally {
@@ -216,14 +228,16 @@ public class ReadFromGo implements Runnable {
     }
 
     public void stop() {
-        if (clientSocket != null && !clientSocket.isClosed()) {
+        if (clientSocket != null) {
             try {
+                stopGoProcess();
                 clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("fkmas");
             }
         }
+        if (goProc != null)
+            goProc.interrupt();
         stop = true;
         game.setConnected(false);
     }
@@ -233,18 +247,38 @@ public class ReadFromGo implements Runnable {
      * @param port The port, including COM
      */
     public void setComPort(String port) {
+
         try {
-            if(outToServer != null)
-                outToServer.writeBytes(port + "\n");
+            if (goServerRunning && comPort != "") {
+                this.stopGoProcess();
+                clientSocket.close();
+
+                Thread.sleep(200);
+                game.startReader(this);
+            } else {
+                if (outToServer != null)
+                    outToServer.writeBytes(port + "\n");
+            }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            comPort = port;
         }
     }
 
-    public void connect() {
+    public void stopGoProcess() {
         try {
             outToServer.writeBytes("Connect\n");
-            System.out.println("stop");
+            System.out.println("stopJ");
+            goServerRunning = false;
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            isMonitoring = false;
         } catch (IOException e) {
             e.printStackTrace();
         }

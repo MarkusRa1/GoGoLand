@@ -31,6 +31,7 @@ var stopSpheroConnection = make(chan bool)
 var isMonitoring = false
 var reConnect = false
 var readyToRestartSpheroConnection = make(chan bool)
+var waitForCOMPort = make(chan bool)
 
 type SpheroCommand struct {
 	name string
@@ -38,11 +39,21 @@ type SpheroCommand struct {
 }
 
 func main() {
+	fmt.Println("Go started...")
 	if len(os.Args) > 1 {
 		port = os.Args[1]
-		dontCloseWhenJavaClose = false
+		if strings.ContainsAny(os.Args[1], "COM") {
+			comPort = os.Args[1]
+			if len(os.Args) > 2 {
+				port = os.Args[2]
+				dontCloseWhenJavaClose = false
+			}
+		} else {
+			port = os.Args[1]
+			dontCloseWhenJavaClose = false
+		}
 	}
-
+	fmt.Println("wut")
 	go sendData()
 	tcpConnect()
 }
@@ -50,6 +61,7 @@ func main() {
 func tcpConnect() {
 	if !lostConnection {
 		var err1 error = nil
+		fmt.Println("Tcp-port:" + port)
 		ln, err1 = net.Listen("tcp", "127.0.0.1:" + port)
 		if err1 != nil {
 			panic(err1.Error())
@@ -78,6 +90,9 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	var adaptor *sphero.Adaptor
 	switch runtime.GOOS {
 	case "windows":
+		fmt.Println("Waiting for COM")
+		<-waitForCOMPort
+		fmt.Println("Done waiting for COM")
 		adaptor = sphero.NewAdaptor(comPort)
 	case "darwin":
 		//op, _ := exec.Command("/bin/sh", "./findspheromac.sh").Output()
@@ -184,7 +199,7 @@ func feedBack() {
 
 		fmt.Println(message)
 		if strings.Compare(message, "Connect\n") == 0 {
-			fmt.Println("Connect")
+			fmt.Println("StopG")
 			os.Exit(100) // Temporary
 			if spheroConnectedOrTrying {
 				incomingCommand<-SpheroCommand{"Connect", 0}
@@ -194,7 +209,7 @@ func feedBack() {
 		}
 		if strings.ContainsAny(message, "COM") {
 			comPort = strings.Trim(message, "\n")
-			incomingCommand<-SpheroCommand{"Connect", 0}
+			waitForCOMPort<-true
 		}
 	}
 }
