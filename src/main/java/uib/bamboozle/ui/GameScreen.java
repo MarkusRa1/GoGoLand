@@ -97,7 +97,7 @@ public class GameScreen implements Screen {
     /**
      * Starts the next level
      */
-    private void nextLevel() {
+    public void nextLevel() {
         if(level != null) {
             level.dispose();
         }
