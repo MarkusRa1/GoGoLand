@@ -99,7 +99,7 @@ public class MainMenuScreen extends Menu implements Screen {
         topRightTable.row();
         cStyle.imageUp = createImage(CONNECTED);
         ncStyle.imageUp = createImage(NOTCONNECTED);
-        connectedButton = createButton(NOTCONNECTED, null, this);
+        connectedButton = createButton(NOTCONNECTED, null);
         topRightTable.add(connectedButton).width((float) (connectedButton.getWidth())).height((float) (connectedButton.getHeight()));
     }
     
