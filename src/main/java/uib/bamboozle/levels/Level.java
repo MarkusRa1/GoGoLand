@@ -19,11 +19,11 @@ public abstract class Level implements Disposable {
     private Set<GameObject> objects = new HashSet<>();
     private ModelFactory factory;
 
-    public Level(Graphics graphics) {
+    public Level(Graphics graphics, AudioManager audioManager) {
         this.dynamicsWorld = graphics.getDynamicsWorld();
         this.renderer = graphics.getRenderer();
         this.factory = graphics.getModelFactory();
-        this.audioManager = graphics.getAudioManager();
+        this.audioManager = audioManager;
 
         audioManager.loopTrack(getTrackName());
     }

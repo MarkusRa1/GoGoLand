@@ -35,6 +35,7 @@ public abstract class Menu implements Screen {
     @Override
     public void hide() {
         Gdx.input.setInputProcessor(null);
+        
     }
     @Override
     public void show() {

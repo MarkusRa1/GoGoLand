@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import uib.bamboozle.Game;
 
 public class CompleteLevelScreen extends Menu {
-    private static final String BACKGROUND = "bg2.jpg";
+    private static final String BACKGROUND = "Background/bg4.png";
     private static final String NEXT = "next.png";
 
     //Name for switch case methods
