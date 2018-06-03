@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import uib.bamboozle.communication.ReadFromGo;
-import uib.bamboozle.ui.CompleteLevelScreen;
-import uib.bamboozle.ui.GameScreen;
-import uib.bamboozle.ui.MainMenuScreen;
-import uib.bamboozle.ui.PauseMenuScreen;
+import uib.bamboozle.ui.*;
 
 public class Game extends com.badlogic.gdx.Game {
     // scenes
@@ -18,6 +15,8 @@ public class Game extends com.badlogic.gdx.Game {
     private PauseMenuScreen pauseMenuScreen;
     private Thread readerThread;
 
+    private AudioManager audioManager = new AudioManager();
+    
     public int roll;
     public int pitch;
     public int yaw;
@@ -44,6 +43,9 @@ public class Game extends com.badlogic.gdx.Game {
         connect();
         batch = new SpriteBatch();
         font = new BitmapFont();
+
+        audioManager.preloadTracks("level1music.wav", "level2music.wav");
+
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
 
@@ -160,5 +162,9 @@ public class Game extends com.badlogic.gdx.Game {
     public void nextLevel() {
         setScreen(gameScreen);
         gameScreen.nextLevel();
+    }
+
+    public AudioManager getAudioManager() {
+        return audioManager;
     }
 }
