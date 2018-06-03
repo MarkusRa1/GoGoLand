@@ -4,8 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -27,10 +28,9 @@ public class MainMenuScreen extends Menu implements Screen {
     private final String connect = "connect";
     
     //Graphics for mainmenu
-    TextureAtlas spriteSheet;
-    private Array<Sprite> bb8;
     ParallaxBackground parallaxBackground;
     private Table table;
+   
     
     private Button connectButton;
     private ImageButton.ImageButtonStyle connectedStyle = new ImageButton.ImageButtonStyle();
@@ -40,18 +40,23 @@ public class MainMenuScreen extends Menu implements Screen {
     	super(game);
         table = new Table();
         
-        //BB8 animation
-        spriteSheet = new TextureAtlas("bbm8.txt");
-        bb8 = spriteSheet.createSprites("BB8");
-        
-        //parallax background
+        //parallax background, for more advanced add pictures to Background and loop them
         Array<Texture> textures = new Array<Texture>();
-        for(int i = 4; i <=4;i++){
-          textures.add(new Texture(Gdx.files.internal("Background/bg"+i+".png")));
+          textures.add(new Texture(Gdx.files.internal("Background/bg4.png")));
           textures.get(textures.size-1).setWrap(Texture.TextureWrap.MirroredRepeat, Texture.TextureWrap.MirroredRepeat);
-        }
         parallaxBackground = new ParallaxBackground(textures, stage.getWidth(), stage.getHeight(), 1);
         getStage().addActor(parallaxBackground);
+        
+        //BB8 animation
+        Array<TextureRegion> bb8footage = new Array<TextureRegion>();
+        for(int i = 0; i<=22 ; i ++) {
+        	bb8footage.add(new TextureRegion(new Texture(Gdx.files.internal("bb8/" + i +".png"))));
+        }
+        System.out.println(bb8footage.size);
+        Animation<TextureRegion> bb8Animate = new Animation<TextureRegion>(0.0001f , bb8footage, PlayMode.LOOP);
+        AnimatedActor bb8 = new AnimatedActor(bb8Animate);
+        bb8.setPosition(350, 150);
+        getStage().addActor(bb8);
         
         createButtons();
         //table.setDebug(true);
@@ -61,6 +66,7 @@ public class MainMenuScreen extends Menu implements Screen {
         
     }
 
+    
     private void createButtons() {
         connectButton = createButton(CONNECT, connect, this);
         connectButton.setStyle(connectedStyle);
@@ -74,6 +80,7 @@ public class MainMenuScreen extends Menu implements Screen {
         buttons.add(createButton(EXIT, exit, this));
 
         table.center();
+
         table.row();
         for (Button but : buttons) {
             table.add(but).width((float) (but.getWidth() / 4)).height((float) (but.getHeight() / 4)).pad(5);
