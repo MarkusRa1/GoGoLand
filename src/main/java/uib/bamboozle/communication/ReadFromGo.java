@@ -17,6 +17,8 @@ import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
     private boolean stop = false;
+    private boolean isMonitoring = false;
+
     Socket clientSocket = null;
     DatagramSocket udpSocket = null;
     byte[] receiveData = new byte[1024];
@@ -48,6 +50,10 @@ public class ReadFromGo implements Runnable {
      * @param line the data from the Go server.
      */
     public void intepretData(String line) {
+        if (!isMonitoring) {
+            isMonitoring = true;
+            game.setConnected(true);
+        }
         line = line.split("\n")[0];
         if (line.matches("\\d+")) {
         } else if (line.contains("error")) {

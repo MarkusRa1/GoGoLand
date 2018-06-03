@@ -24,6 +24,8 @@ public class Game extends com.badlogic.gdx.Game {
     public SpriteBatch batch;
     public BitmapFont font;
 
+
+
     private ReadFromGo reader;
     private boolean connected = false;
 
