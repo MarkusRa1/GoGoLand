@@ -25,9 +25,6 @@ public class CompleteLevelScreen extends Menu {
     private static final String BACKGROUND = "Background/bg4.png";
     private static final String NEXT = "next.png";
 
-    //Name for switch case methods
-    private final String next = "next";
-
     private Table table;
 
     public CompleteLevelScreen(Game game) {
@@ -51,7 +48,7 @@ public class CompleteLevelScreen extends Menu {
     private void createButtons() {
         Array<Button> buttons = new Array<>();
 
-        buttons.add(createButton(NEXT, next, this));
+        buttons.add(createButton(NEXT, this::nextLevel));
 
         table.center();
         table.row();
@@ -66,5 +63,9 @@ public class CompleteLevelScreen extends Menu {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
+    }
+
+    public void nextLevel() {
+        game.nextLevel();
     }
 }

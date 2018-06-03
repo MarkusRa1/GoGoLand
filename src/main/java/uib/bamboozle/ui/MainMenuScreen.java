@@ -27,11 +27,6 @@ public class MainMenuScreen extends Menu implements Screen {
     private static final String EXIT = "buttons/button_quit.png";
     private static final String CONNECT = "buttons/button_connect.png";
     private static final String DISCONNECT = "buttons/button_disconnect.png";
-
-    //Name for switch case methods
-    private final String newGame = "newGame";
-    private final String exit = "exitGame";
-    private final String connect = "connect";
     
     //Graphics for mainmenu
     ParallaxBackground parallaxBackground;
@@ -80,16 +75,16 @@ public class MainMenuScreen extends Menu implements Screen {
 
     
     private void createButtons() {
-        connectButton = createButton(CONNECT, connect, this);
+        connectButton = createButton(CONNECT, this::connect);
         connectButton.setStyle(connectedStyle);
         connectedStyle.imageUp = createImage(CONNECT);
         disconnectedStyle.imageUp = createImage(DISCONNECT);
 
         Array<Button> buttons = new Array<>();
 
-        buttons.add(createButton(PLAY, newGame, this));
+        buttons.add(createButton(PLAY, this::newGame));
         buttons.add(connectButton);
-        buttons.add(createButton(EXIT, exit, this));
+        buttons.add(createButton(EXIT, this::exitGame));
 
         table.setPosition(stage.getWidth()/10 - 200, stage.getHeight()/10 +200);;
 
@@ -104,7 +99,7 @@ public class MainMenuScreen extends Menu implements Screen {
         topRightTable.row();
         cStyle.imageUp = createImage(CONNECTED);
         ncStyle.imageUp = createImage(NOTCONNECTED);
-        connectedButton = createButton(NOTCONNECTED, null, this);
+        connectedButton = createButton(NOTCONNECTED, null);
         topRightTable.add(connectedButton).width((float) (connectedButton.getWidth())).height((float) (connectedButton.getHeight()));
     }
     
@@ -126,6 +121,21 @@ public class MainMenuScreen extends Menu implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
+    }
+
+    public void exitGame() {
+        Gdx.app.exit();
+    }
+    public void newGame() {
+        game.setScreen(game.newGame());
+    }
+
+    public void connect() {
+        if(!game.isConnected()) {
+            game.connect();
+        } else {
+            game.disconnect();
+        }
     }
 
     @Override
