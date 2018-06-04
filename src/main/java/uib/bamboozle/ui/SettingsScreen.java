@@ -140,10 +140,10 @@ public class SettingsScreen extends Menu implements Screen {
     	//TODO inserted by Sturle
     }
     public void toggleLED() {
-
+        game.getReader().toggleLED();
     }
     public void calibrate() {
-
+        game.getReader().calibrate();
     }
     @Override
     public void show() {
