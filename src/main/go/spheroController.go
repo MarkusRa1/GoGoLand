@@ -31,16 +31,18 @@ var stopSpheroConnection = make(chan bool)
 var isMonitoring = false
 var reConnect = false
 var readyToRestartSpheroConnection = make(chan bool)
-
+var brightness = 10
 var comPortKnown = false
 var waitForCOMPort = make(chan bool)
+var r = 255
+var g = 255
+var b = 255
 
 type SpheroCommand struct {
 	name string
 	value1 int
 	value2 int
 	value3 int
-
 }
 
 func main() {
@@ -119,6 +121,7 @@ func sendData() {
 		spheroDriver.SetStabilization(false)
 
 		work := func() {
+			spheroDriver.SetRGB(255, 255, 255)
 			spheroDriver.SetDataStreaming(sphero.DefaultDataStreamingConfig())
 			fmt.Println("Starting to monitor...")
 			spheroDriver.On(sphero.SensorData, func(data interface{}) {
@@ -155,9 +158,27 @@ func sendData() {
 					spheroDriver.SetHeading(0)
 					break
 				case "setRGB":
-					spheroDriver.SetRGB(uint8(c.value1), uint8(c.value2), uint8(c.value3))
+					r = c.value1
+					g = c.value2
+					b = c.value3
+					spheroDriver.SetRGB(uint8(c.value1*brightness/10), uint8(c.value2*brightness/10), uint8(c.value3*brightness/10))
 					break
-
+				case "increaseBrightness":
+					if brightness+1 <= 10 {
+						brightness = brightness+1
+					}
+					spheroDriver.SetRGB(uint8(r*brightness/10),
+						uint8(g*brightness/10),
+						uint8(b*brightness/10))
+					break
+				case "decreaseBrightness":
+					if brightness-1 >= 0 {
+						brightness = brightness-1
+					}
+					spheroDriver.SetRGB(uint8(r*brightness/10),
+						uint8(g*brightness/10),
+						uint8(b*brightness/10))
+					break
 				}
 			}
 		}
@@ -210,7 +231,9 @@ func feedBack() {
 				lostConnection = false;
 			} else {
 				stop = true
-				fmt.Println("Error received:", err.Error())
+				if err != nil {
+					fmt.Println("Error received:", err.Error())
+				}
 			}
 		}
 
@@ -237,11 +260,18 @@ func feedBack() {
 			incomingCommand<-SpheroCommand{"ToggleHeading", 0, 0, 0}
 		}
 		if strings.HasPrefix(message, "setRGB") {
-			colours := strings.Split(message, " ")
+			fmt.Println(message[:(len(message)-1)])
+			colours := strings.Split(message[:(len(message)-1)], " ")
 			r, _ := strconv.Atoi(colours[1])
 			g, _ := strconv.Atoi(colours[2])
 			b, _ := strconv.Atoi(colours[3])
 			incomingCommand<-SpheroCommand{"setRGB", r, g, b}
+		}
+		if strings.HasPrefix(message, "increaseBrightness") {
+			incomingCommand<-SpheroCommand{"increaseBrightness", 0, 0, 0}
+		}
+		if strings.HasPrefix(message, "decreaseBrightness") {
+			incomingCommand<-SpheroCommand{"decreaseBrightness", 0, 0, 0}
 		}
 	}
 }

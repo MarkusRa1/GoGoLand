@@ -119,25 +119,25 @@ public class SettingsScreen extends Menu implements Screen {
     }
 
     public void setRed() {
-    	//TODO inserted by Sturle
+    	game.getReader().setRGB(255, 0, 0);
     }
 
     public void setBlue() {
-    	//TODO inserted by Sturle
+    	game.getReader().setRGB(0, 0, 255);
     }
 
     public void setGreen() {
-    	//TODO inserted by Sturle
+    	game.getReader().setRGB(0, 255, 0);
     }
 
     public void setPurple() {
-    	//TODO inserted by Sturle
+    	game.getReader().setRGB(255, 0, 255);
     }
     public void increaseLight() {
-    	//TODO inserted by Sturle
+    	game.getReader().increaseBrightness();
     }
     public void decreaseLight() {
-    	//TODO inserted by Sturle
+    	game.getReader().decreaseBrightness();
     }
     public void toggleLED() {
         game.getReader().toggleLED();
