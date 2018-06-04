@@ -27,6 +27,7 @@ public class ReadFromGo implements Runnable {
     private DataOutputStream outToServer = null;
     private Game game;
 
+    private boolean calibrate;
 
     private Thread goProc;
 
@@ -246,6 +247,18 @@ public class ReadFromGo implements Runnable {
             goProc.interrupt();
         stop = true;
         game.setConnected(false);
+    }
+
+    public void toggleLED() {
+        if(!calibrate)
+            writeToServer("Calibrate on\n");
+        else
+            writeToServer("Calibrate off\n");
+        calibrate = !calibrate;
+    }
+
+    public void calibrate() {
+        writeToServer("ToggleHeading\n");
     }
 
     /**
