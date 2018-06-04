@@ -32,7 +32,7 @@ var isMonitoring = false
 var reConnect = false
 var readyToRestartSpheroConnection = make(chan bool)
 
-var comPortKnown = true
+var comPortKnown = false
 var waitForCOMPort = make(chan bool)
 
 type SpheroCommand struct {
