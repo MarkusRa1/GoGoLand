@@ -145,6 +145,12 @@ func sendData() {
 					stop = true
 					stopSpheroConnection<-true
 					break
+				case "Calibrate":
+					spheroDriver.SetBackLED(uint8(c.value))
+					break
+				case "ToggleHeading":
+					spheroDriver.SetHeading(0)
+					break
 				}
 			}
 		}
@@ -179,6 +185,8 @@ func sendData() {
 	fmt.Println("Stopped sphero connection")
 }
 
+
+
 func feedBack() {
 	_, ereg := regexp.Compile("\\w+ \\d*")
 	if ereg != nil {
@@ -186,7 +194,7 @@ func feedBack() {
 	}
 	for !stop {
 		message, err := bufio.NewReader(tcpconn).ReadString('\n')
-		if err != nil {
+		if err != nil || strings.Compare(message, "Stop\n") == 0 {
 			if dontCloseWhenJavaClose {
 				lostConnection = true
 				tcpConnected = false
@@ -208,9 +216,18 @@ func feedBack() {
 			}
 			go sendData()
 		}
-		if strings.ContainsAny(message, "COM") {
+		if strings.HasPrefix(message, "COM") {
 			comPort = strings.Trim(message, "\n")
 			waitForCOMPort<-true
+		}
+		if strings.Compare(message, "Calibrate on\n") == 0 {
+			incomingCommand<-SpheroCommand{"Calibrate", 255}
+		}
+		if strings.Compare(message, "Calibrate off\n") == 0 {
+			incomingCommand<-SpheroCommand{"Calibrate", 0}
+		}
+		if strings.Compare(message, "ToggleHeading") == 0 {
+			incomingCommand<-SpheroCommand{"ToggleHeading", 0}
 		}
 	}
 }
