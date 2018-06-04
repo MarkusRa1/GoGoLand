@@ -37,7 +37,10 @@ var waitForCOMPort = make(chan bool)
 
 type SpheroCommand struct {
 	name string
-	value int
+	value1 int
+	value2 int
+	value3 int
+
 }
 
 func main() {
@@ -146,11 +149,15 @@ func sendData() {
 					stopSpheroConnection<-true
 					break
 				case "Calibrate":
-					spheroDriver.SetBackLED(uint8(c.value))
+					spheroDriver.SetBackLED(uint8(c.value1))
 					break
 				case "ToggleHeading":
 					spheroDriver.SetHeading(0)
 					break
+				case "setRGB":
+					spheroDriver.SetRGB(uint8(c.value1), uint8(c.value2), uint8(c.value3))
+					break
+
 				}
 			}
 		}
@@ -211,7 +218,7 @@ func feedBack() {
 		if strings.Compare(message, "Connect\n") == 0 {
 			os.Exit(100) // Temporary
 			if spheroConnectedOrTrying {
-				incomingCommand<-SpheroCommand{"Connect", 0}
+				incomingCommand<-SpheroCommand{"Connect", 0, 0, 0}
 				<-readyToRestartSpheroConnection
 			}
 			go sendData()
@@ -221,13 +228,20 @@ func feedBack() {
 			waitForCOMPort<-true
 		}
 		if strings.Compare(message, "Calibrate on\n") == 0 {
-			incomingCommand<-SpheroCommand{"Calibrate", 255}
+			incomingCommand<-SpheroCommand{"Calibrate", 255, 0, 0}
 		}
 		if strings.Compare(message, "Calibrate off\n") == 0 {
-			incomingCommand<-SpheroCommand{"Calibrate", 0}
+			incomingCommand<-SpheroCommand{"Calibrate", 0, 0, 0}
 		}
-		if strings.Compare(message, "ToggleHeading") == 0 {
-			incomingCommand<-SpheroCommand{"ToggleHeading", 0}
+		if strings.Compare(message, "ToggleHeading\n") == 0 {
+			incomingCommand<-SpheroCommand{"ToggleHeading", 0, 0, 0}
+		}
+		if strings.HasPrefix(message, "setRGB") {
+			colours := strings.Split(message, " ")
+			r, _ = strconv.Atoi(colours[1])
+			g, _ = strconv.Atoi(colours[2])
+			b, _ = strconv.Atoi(colours[3])
+			incomingCommand<-SpheroCommand{"setRGB", r, g, b}
 		}
 	}
 }
