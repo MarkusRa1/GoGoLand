@@ -238,9 +238,9 @@ func feedBack() {
 		}
 		if strings.HasPrefix(message, "setRGB") {
 			colours := strings.Split(message, " ")
-			r, _ = strconv.Atoi(colours[1])
-			g, _ = strconv.Atoi(colours[2])
-			b, _ = strconv.Atoi(colours[3])
+			r, _ := strconv.Atoi(colours[1])
+			g, _ := strconv.Atoi(colours[2])
+			b, _ := strconv.Atoi(colours[3])
 			incomingCommand<-SpheroCommand{"setRGB", r, g, b}
 		}
 	}
