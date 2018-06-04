@@ -56,7 +56,6 @@ func main() {
 			dontCloseWhenJavaClose = false
 		}
 	}
-	fmt.Println("wut")
 	go sendData()
 	tcpConnect()
 }
@@ -64,7 +63,6 @@ func main() {
 func tcpConnect() {
 	if !lostConnection {
 		var err1 error = nil
-		fmt.Println("Tcp-port:" + port)
 		ln, err1 = net.Listen("tcp", "127.0.0.1:" + port)
 		if err1 != nil {
 			panic(err1.Error())
@@ -94,9 +92,8 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	switch runtime.GOOS {
 	case "windows":
 		if !comPortKnown {
-			fmt.Println("Waiting for COM")
+			fmt.Println("Waiting for COM-Port...")
 			<-waitForCOMPort
-			fmt.Println("Done waiting for COM")
 		}
 		adaptor = sphero.NewAdaptor(comPort)
 	case "darwin":
@@ -204,7 +201,6 @@ func feedBack() {
 
 		fmt.Println(message)
 		if strings.Compare(message, "Connect\n") == 0 {
-			fmt.Println("StopG")
 			os.Exit(100) // Temporary
 			if spheroConnectedOrTrying {
 				incomingCommand<-SpheroCommand{"Connect", 0}

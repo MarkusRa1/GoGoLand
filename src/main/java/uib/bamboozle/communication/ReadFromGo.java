@@ -122,7 +122,6 @@ public class ReadFromGo implements Runnable {
                 ExecutorService executor = Executors.newCachedThreadPool();
                 future = executor.submit(inFromServer::readLine);
                 if (future.get(3, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0) {
-                    System.out.println("hmm");
                     throw new IOException("Unknown server on port " + preferredPort);
                 } else {
                     if (comPort != "")
@@ -160,7 +159,6 @@ public class ReadFromGo implements Runnable {
                 ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", comPort, "" + preferredPort);
             else
                 ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", "" + preferredPort);
-            System.out.println("comPort: " + comPort);
             ps.redirectErrorStream(true);
             Process pr = ps.start();
             System.out.println("Started Go");
@@ -169,7 +167,6 @@ public class ReadFromGo implements Runnable {
                 @Override
                 public void run(){
                     try {
-                        System.out.println("yoo");
                         String line;
                         while ((line = in.readLine()) != null) {
                             System.out.println(line);
@@ -256,7 +253,6 @@ public class ReadFromGo implements Runnable {
                 this.stopGoProcess();
                 tcpSocket.close();
 
-                System.out.println("hmmmmmmmm");
                 Thread.sleep(200);
                 game.startReader(this);
             } else if (outToServer != null && tcpConnected) {
@@ -274,7 +270,6 @@ public class ReadFromGo implements Runnable {
     public void stopGoProcess() {
         try {
             outToServer.writeBytes("Connect\n");
-            System.out.println("stopJ");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
