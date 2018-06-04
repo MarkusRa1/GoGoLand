@@ -20,7 +20,7 @@ var tcpconn net.Conn = nil
 var udpconn net.Conn = nil
 var spheroConnectedOrTrying = false
 var port = "9001"
-var comPort = "COM6"
+var comPort = "COM5"
 var dontCloseWhenJavaClose = true
 var lostConnection = false
 var ln net.Listener = nil
@@ -32,7 +32,7 @@ var isMonitoring = false
 var reConnect = false
 var readyToRestartSpheroConnection = make(chan bool)
 
-var comPortKnown = false
+var comPortKnown = true
 var waitForCOMPort = make(chan bool)
 
 type SpheroCommand struct {
