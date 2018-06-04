@@ -20,6 +20,7 @@ var tcpconn net.Conn = nil
 var udpconn net.Conn = nil
 var spheroConnectedOrTrying = false
 var port = "9001"
+var comPort = "COM6"
 var dontCloseWhenJavaClose = true
 var lostConnection = false
 var ln net.Listener = nil
@@ -31,17 +32,30 @@ var isMonitoring = false
 var reConnect = false
 var readyToRestartSpheroConnection = make(chan bool)
 
+var comPortKnown = false
+var waitForCOMPort = make(chan bool)
+
 type SpheroCommand struct {
 	name string
 	value int
 }
 
 func main() {
+	fmt.Println("Go started...")
 	if len(os.Args) > 1 {
 		port = os.Args[1]
-		dontCloseWhenJavaClose = false
+		if strings.ContainsAny(os.Args[1], "COM") {
+			comPortKnown = true
+			comPort = os.Args[1]
+			if len(os.Args) > 2 {
+				port = os.Args[2]
+				dontCloseWhenJavaClose = false
+			}
+		} else {
+			port = os.Args[1]
+			dontCloseWhenJavaClose = false
+		}
 	}
-
 	go sendData()
 	tcpConnect()
 }
@@ -77,7 +91,11 @@ func getSphero() (*sphero.Adaptor, *sphero.SpheroDriver) {
 	var adaptor *sphero.Adaptor
 	switch runtime.GOOS {
 	case "windows":
-		adaptor = sphero.NewAdaptor("COM6")
+		if !comPortKnown {
+			fmt.Println("Waiting for COM-Port...")
+			<-waitForCOMPort
+		}
+		adaptor = sphero.NewAdaptor(comPort)
 	case "darwin":
 		//op, _ := exec.Command("/bin/sh", "./findspheromac.sh").Output()
 		adaptor = sphero.NewAdaptor("/dev/" + "tty.Sphero-GWG-AMP-SPP" /*strings.TrimRight(string(op), "\n")*/)
@@ -183,13 +201,16 @@ func feedBack() {
 
 		fmt.Println(message)
 		if strings.Compare(message, "Connect\n") == 0 {
-			fmt.Println("Connect")
 			os.Exit(100) // Temporary
 			if spheroConnectedOrTrying {
 				incomingCommand<-SpheroCommand{"Connect", 0}
 				<-readyToRestartSpheroConnection
 			}
 			go sendData()
+		}
+		if strings.ContainsAny(message, "COM") {
+			comPort = strings.Trim(message, "\n")
+			waitForCOMPort<-true
 		}
 	}
 }

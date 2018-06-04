@@ -106,20 +106,32 @@ public class Game extends com.badlogic.gdx.Game {
      * Connects to the go server
      */
     public void connect() {
-        // System.out.println("connect()");
-        // if (reader == null) {
-        // reader = new ReadFromGo(this);
-        // readerThread = new Thread(reader);
-        // readerThread.start();
-        // } else {
-        // reader.connect();
-        // if (readerThread != null) {
-        // readerThread.interrupt();
-        // readerThread = new Thread(reader);
-        // readerThread.start();
-        // System.out.println("Thread interrupted and started");
-        // }
-        // }
+
+         if (reader == null) {
+             reader = new ReadFromGo(this);
+             readerThread = new Thread(reader);
+             readerThread.start();
+         } else {
+             System.out.println("stopGoProcess()");
+             if (readerThread != null) {
+                 reader.stop();
+                 readerThread.interrupt();
+                 reader = new ReadFromGo(this);
+                 readerThread = new Thread(reader);
+                 readerThread.start();
+                 System.out.println("Thread interrupted and started");
+             }
+         }
+    }
+
+    public void startReader(ReadFromGo g) {
+        if (readerThread != null && readerThread.isAlive()) {
+            readerThread.interrupt();
+        }
+        reader = g;
+        readerThread = new Thread(reader);
+        readerThread.start();
+        System.out.println("Reader started");
     }
 
     /**
@@ -179,5 +191,9 @@ public class Game extends com.badlogic.gdx.Game {
 
     public AudioManager getAudioManager() {
         return audioManager;
+    }
+
+    public ReadFromGo getReader() {
+        return reader;
     }
 }

@@ -13,7 +13,7 @@ import java.util.Set;
  * An abstract class that provides functionality for the levels
  */
 public abstract class Level implements Disposable {
-    private final AudioManager audioManager;
+    private AudioManager audioManager;
     private btDiscreteDynamicsWorld dynamicsWorld;
     private Renderer renderer;
     private Set<GameObject> objects = new HashSet<>();
@@ -24,8 +24,6 @@ public abstract class Level implements Disposable {
         this.renderer = graphics.getRenderer();
         this.factory = graphics.getModelFactory();
         this.audioManager = audioManager;
-
-        audioManager.loopTrack(getTrackName());
     }
 
     /**
@@ -49,8 +47,6 @@ public abstract class Level implements Disposable {
             obj.dispose();
             iter.remove();
         }
-
-        audioManager.stopTrack(getTrackName());
     }
 
     /**

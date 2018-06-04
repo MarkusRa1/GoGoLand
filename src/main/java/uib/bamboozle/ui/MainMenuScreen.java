@@ -2,14 +2,15 @@ package uib.bamboozle.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
 
 import uib.bamboozle.Game;
@@ -26,10 +27,17 @@ public class MainMenuScreen extends Menu implements Screen {
     private static final String EXIT = "buttons/button_quit.png";
     private static final String CONNECT = "buttons/button_connect.png";
     private static final String DISCONNECT = "buttons/button_disconnect.png";
+
     private static final String SETTINGS = "buttons/button_settings.png";
     
+
+    private static final String SET = "buttons/button_set.png";
+
+
     //Graphics for mainmenu
     private Table topRightTable;
+
+    TextField portField;
 
     private Button connectedButton;
     private ImageButton.ImageButtonStyle cStyle = new ImageButton.ImageButtonStyle();
@@ -79,7 +87,7 @@ public class MainMenuScreen extends Menu implements Screen {
         buttons.add(connectButton);
         buttons.add(createButton(EXIT, this::exitGame));
 
-        table.setPosition(stage.getWidth()/10 - 200, stage.getHeight()/10 +200);;
+        table.setPosition(stage.getWidth()/10 - 200, stage.getHeight()/10 +100);;
 
         table.row();
         for (Button but : buttons) {
@@ -87,6 +95,19 @@ public class MainMenuScreen extends Menu implements Screen {
             table.row();
         }
 
+        BitmapFont font = new BitmapFont();
+        font.getData().setScale(3.0f);
+
+        portField = new TextField("COM4", new TextField.TextFieldStyle(font, Color.BLACK, null, null, createImage("textfield.png")));
+
+        table.add().height(100);
+        table.row();
+        table.add(portField).width((float) (300)).height((float) (portField.getHeight() / 2)).pad(5);
+
+        Button setButton = createButton(SET, this::setPort);
+
+        table.row();
+        table.add(setButton).width((float) (setButton.getWidth() / 2)).height((float) (setButton.getHeight() / 2)).pad(5);
 
         topRightTable.top().right();
         topRightTable.row();
@@ -132,6 +153,11 @@ public class MainMenuScreen extends Menu implements Screen {
         } else {
             game.disconnect();
         }
+    }
+
+    public void setPort() {
+        if(game.getReader() != null)
+            game.getReader().setComPort(portField.getText());
     }
 
     @Override
