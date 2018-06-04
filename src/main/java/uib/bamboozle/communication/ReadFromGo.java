@@ -48,6 +48,7 @@ public class ReadFromGo implements Runnable {
 
     /**
      * Takes data sendt by Go server and inteprets them. The data is available in the variables game.roll, game.pitch and game.yaw.
+     *
      * @param line the data from the Go server.
      */
     public void intepretData(String line) {
@@ -83,13 +84,15 @@ public class ReadFromGo implements Runnable {
         } finally {
             try {
                 tcpSocket.close();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
         }
 
     }
 
     /**
      * Connects to Go server, if Go server is not online, a subprocess of the Go server will be started on an available port.
+     *
      * @param preferredPort The port that Go server exists or where we would prefer to communicate with the Go server.
      * @return The buffered reader to read sphero data.
      */
@@ -102,7 +105,7 @@ public class ReadFromGo implements Runnable {
             try {
                 startGoProcess(t, preferredPort);
 
-                while(!goServerRunning) {
+                while (!goServerRunning) {
                     Thread.sleep(200);
                 }
 
@@ -112,11 +115,11 @@ public class ReadFromGo implements Runnable {
 
 
                 TimeUnit.SECONDS.sleep(1);
-                if (tcpSocket == null || tcpSocket.getPort() != preferredPort || tcpSocket.isClosed());
+                if (tcpSocket == null || tcpSocket.getPort() != preferredPort || tcpSocket.isClosed())
                     tcpSocket = new Socket("localhost", preferredPort);
                 outToServer = new DataOutputStream(tcpSocket.getOutputStream());
 
-                outToServer.writeBytes("Hello Go Beep Boop\n");
+                writeToServer("Hello Go Beep Boop\n");
                 inFromServer = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
 
                 ExecutorService executor = Executors.newCachedThreadPool();
@@ -125,7 +128,7 @@ public class ReadFromGo implements Runnable {
                     throw new IOException("Unknown server on port " + preferredPort);
                 } else {
                     if (comPort != "")
-                        outToServer.writeBytes(comPort);
+                        writeToServer(comPort);
                     tcpConnected = true;
                     System.out.println("Connected to Go on port " + preferredPort);
                 }
@@ -163,9 +166,9 @@ public class ReadFromGo implements Runnable {
             Process pr = ps.start();
             System.out.println("Started Go");
             BufferedReader in = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            Runnable task1 = new Runnable(){
+            Runnable task1 = new Runnable() {
                 @Override
-                public void run(){
+                public void run() {
                     try {
                         String line;
                         while ((line = in.readLine()) != null) {
@@ -188,6 +191,7 @@ public class ReadFromGo implements Runnable {
 
     /**
      * Checks if there is a server on the port
+     *
      * @param port the port number to be checked
      * @return true if the port is busy
      */
@@ -221,6 +225,7 @@ public class ReadFromGo implements Runnable {
 
     /**
      * Listens for data on udpsocket. Make sure it is initialized, because it won't be checked for preformance purposes.
+     *
      * @return the data receive from Go.
      */
     private String udpReceive() throws IOException {
@@ -245,6 +250,7 @@ public class ReadFromGo implements Runnable {
 
     /**
      * Changes the COM port with which Gobot connects to sphero
+     *
      * @param port The port, including COM
      */
     public void setComPort(String port) {
@@ -256,7 +262,7 @@ public class ReadFromGo implements Runnable {
                 Thread.sleep(200);
                 game.startReader(this);
             } else if (outToServer != null && tcpConnected) {
-                outToServer.writeBytes(port + "\n");
+                writeToServer(port + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -268,19 +274,21 @@ public class ReadFromGo implements Runnable {
     }
 
     public void stopGoProcess() {
+        goServerRunning = false;
         try {
-            outToServer.writeBytes("Connect\n");
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+        } finally {
+            isMonitoring = false;
+            tcpConnected = false;
+        }
+    }
+
+    public void writeToServer(String s) {
+        try {
+            outToServer.writeBytes(s);
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            goServerRunning = false;
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-            } finally {
-                isMonitoring = false;
-                tcpConnected = false;
-            }
         }
     }
 }

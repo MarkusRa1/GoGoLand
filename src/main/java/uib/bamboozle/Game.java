@@ -168,6 +168,7 @@ public class Game extends com.badlogic.gdx.Game {
      */
     @Override
     public void dispose() {
+        reader.writeToServer("Stop\n");
         disconnect();
         if (gameScreen != null)
             gameScreen.dispose();
