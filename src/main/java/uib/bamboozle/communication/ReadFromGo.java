@@ -304,4 +304,16 @@ public class ReadFromGo implements Runnable {
             e.printStackTrace();
         }
     }
+
+    public void setRGB(int r, int g, int b) {
+        writeToServer("setRGB " + r + " " + g + " " + b + "\n");
+    }
+
+    public void increaseBrightness() {
+        writeToServer("increaseBrightness\n");
+    }
+
+    public void decreaseBrightness() {
+        writeToServer("decreaseBrightness\n");
+    }
 }
