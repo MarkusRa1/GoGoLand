@@ -4,39 +4,38 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
 
 import uib.bamboozle.Game;
 
 public class ReadFromGo implements Runnable {
+    private static final int MAX_PORT_NUMBER = 65535;
+    private static final int MIN_PORT_NUMBER = 0;
     private boolean stop = false;
     private boolean isMonitoring = false;
+    private boolean goServerRunning = false;
+    private boolean tcpConnected = false;
 
     private String comPort = "";
 
-    Socket clientSocket = null;
-    DatagramSocket udpSocket = null;
+    private Socket tcpSocket = null;
+    private DatagramSocket udpSocket = null;
     byte[] receiveData = new byte[1024];
-    DatagramPacket receivePacket = null;
-    DataOutputStream outToServer = null;
+    private DatagramPacket receivePacket = null;
+    private DataOutputStream outToServer = null;
     private Game game;
-    private static final int MAX_PORT_NUMBER = 65535;
-    private static final int MIN_PORT_NUMBER = 0;
+
 
     private Thread goProc;
-
-    private boolean goServerRunning = false;
 
     public ReadFromGo(Game game) {
         this.game = game;
     }
 
     public void run() {
+        stop = false;
         game.readerIsRunning = true;
         try {
             getData(9001);
@@ -71,14 +70,22 @@ public class ReadFromGo implements Runnable {
         }
     }
 
-    public void getData(int port) throws IOException {
+    public void getData(int port) {
         String line;
         BufferedReader inFromServer = connectTo(port);
 
-        while (!stop) {
-            intepretData(udpReceive());
+        try {
+            while (!stop) {
+                intepretData(udpReceive());
+            }
+        } catch (IOException e) {
+            isMonitoring = false;
+        } finally {
+            try {
+                tcpSocket.close();
+            } catch (IOException e) { }
         }
-        clientSocket.close();
+
     }
 
     /**
@@ -87,12 +94,11 @@ public class ReadFromGo implements Runnable {
      * @return The buffered reader to read sphero data.
      */
     public BufferedReader connectTo(int preferredPort) {
-        boolean connected = false;
         BufferedReader inFromServer = null;
         Future<String> future = null;
         Thread t = null;
 
-        while (!connected) {
+        while (!tcpConnected) {
             try {
                 startGoProcess(t, preferredPort);
 
@@ -100,45 +106,47 @@ public class ReadFromGo implements Runnable {
                     Thread.sleep(200);
                 }
 
-                if (udpSocket == null || udpSocket.getPort() != preferredPort || udpSocket.isClosed())
+                if (udpSocket == null || udpSocket.getPort() != preferredPort)
                     udpSocket = new DatagramSocket(preferredPort);
                 receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
 
                 TimeUnit.SECONDS.sleep(1);
-                if (clientSocket == null || clientSocket.getPort() != preferredPort || clientSocket.isClosed());
-                    clientSocket = new Socket("localhost", preferredPort);
-                outToServer = new DataOutputStream(clientSocket.getOutputStream());
+                if (tcpSocket == null || tcpSocket.getPort() != preferredPort || tcpSocket.isClosed());
+                    tcpSocket = new Socket("localhost", preferredPort);
+                outToServer = new DataOutputStream(tcpSocket.getOutputStream());
 
                 outToServer.writeBytes("Hello Go Beep Boop\n");
-                inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                inFromServer = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
 
                 ExecutorService executor = Executors.newCachedThreadPool();
                 future = executor.submit(inFromServer::readLine);
-                if (future.get(5, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0) {
+                if (future.get(3, TimeUnit.SECONDS).compareTo("Hello Java Beep Boop") != 0) {
                     System.out.println("hmm");
                     throw new IOException("Unknown server on port " + preferredPort);
                 } else {
-                    connected = true;
+                    if (comPort != "")
+                        outToServer.writeBytes(comPort);
+                    tcpConnected = true;
                     System.out.println("Connected to Go on port " + preferredPort);
                 }
             } catch (IOException e) {
-                connected = false;
+                tcpConnected = false;
                 e.printStackTrace();
                 System.out.println("Retrying...");
             } catch (TimeoutException ex) {
-                System.out.println("Timeout when connected to server on port  " + preferredPort);
-                connected = false;
+                System.out.println("Timeout when connected to server on port " + preferredPort);
+                tcpConnected = false;
             } catch (InterruptedException e) {
                 System.out.println("Interrupted when connected to server on port " + preferredPort);
-                connected = false;
+                tcpConnected = false;
             } catch (ExecutionException e) {
                 e.printStackTrace();
-                connected = false;
+                tcpConnected = false;
             } finally {
                 if (future != null)
                     future.cancel(true); // may or may not desire this
-                if (!connected)
+                if (!tcpConnected)
                     preferredPort = Math.max((preferredPort + 1) % 65535, 1024);
             }
         }
@@ -223,15 +231,11 @@ public class ReadFromGo implements Runnable {
         return new String(receivePacket.getData());
     }
 
-    private void feedback(BufferedReader fromServer) {
-
-    }
-
     public void stop() {
-        if (clientSocket != null) {
+        if (tcpSocket != null) {
             try {
                 stopGoProcess();
-                clientSocket.close();
+                tcpSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -247,17 +251,16 @@ public class ReadFromGo implements Runnable {
      * @param port The port, including COM
      */
     public void setComPort(String port) {
-
         try {
             if (goServerRunning && comPort != "") {
                 this.stopGoProcess();
-                clientSocket.close();
+                tcpSocket.close();
 
+                System.out.println("hmmmmmmmm");
                 Thread.sleep(200);
                 game.startReader(this);
-            } else {
-                if (outToServer != null)
-                    outToServer.writeBytes(port + "\n");
+            } else if (outToServer != null && tcpConnected) {
+                outToServer.writeBytes(port + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -272,15 +275,17 @@ public class ReadFromGo implements Runnable {
         try {
             outToServer.writeBytes("Connect\n");
             System.out.println("stopJ");
-            goServerRunning = false;
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            isMonitoring = false;
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            goServerRunning = false;
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+            } finally {
+                isMonitoring = false;
+                tcpConnected = false;
+            }
         }
     }
 }

@@ -95,13 +95,13 @@ public class Game extends com.badlogic.gdx.Game {
      * Connects to the go server
      */
     public void connect() {
-         System.out.println("stopGoProcess()");
+
          if (reader == null) {
              reader = new ReadFromGo(this);
              readerThread = new Thread(reader);
              readerThread.start();
          } else {
-             reader.stopGoProcess();
+             System.out.println("stopGoProcess()");
              if (readerThread != null) {
                  reader.stop();
                  readerThread.interrupt();
@@ -120,6 +120,7 @@ public class Game extends com.badlogic.gdx.Game {
         reader = g;
         readerThread = new Thread(reader);
         readerThread.start();
+        System.out.println("Reader started");
     }
 
     /**
