@@ -102,11 +102,15 @@ public class GameScreen implements Screen {
     public void nextLevel() {
         if(level != null) {
             level.dispose();
+            game.getAudioManager().stopTrack(level.getTrackName());
         }
 
         graphics.getRenderer().setCameraPosition(new Vector3());
 
         level = getLevel(++levelNum);
+
+        game.getAudioManager().loopTrack(level.getTrackName());
+        game.getAudioManager().setVolume(level.getTrackName(), 1);
     }
 
     /**
@@ -152,7 +156,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-
+        if(level != null)
+            game.getAudioManager().setVolume(level.getTrackName(), 1);
     }
 
     @Override
@@ -167,6 +172,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void hide() {
-
+        if(level != null)
+            game.getAudioManager().setVolume(level.getTrackName(), 0);
     }
 }
