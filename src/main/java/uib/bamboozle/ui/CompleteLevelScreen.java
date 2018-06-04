@@ -23,7 +23,7 @@ import uib.bamboozle.Game;
 
 public class CompleteLevelScreen extends Menu {
     private static final String BACKGROUND = "Background/bg4.png";
-    private static final String NEXT = "next.png";
+    private static final String NEXT = "buttons/button_next-level.png";
 
     private Table table;
 
@@ -53,7 +53,7 @@ public class CompleteLevelScreen extends Menu {
         table.center();
         table.row();
         for (Button but : buttons) {
-            table.add(but).width((float) (but.getWidth() / 4)).height((float) (but.getHeight() / 4)).pad(5);
+            table.add(but).width((float) (but.getWidth() / 2)).height((float) (but.getHeight() / 2)).pad(5);
             table.row();
         }
     }
