@@ -63,4 +63,8 @@ public class AudioManager implements Disposable {
         getTrack(name).stop();
         getTrack(name).setLooping(false);
     }
+
+    public void setVolume(String name, float vol) {
+        getTrack(name).setVolume(vol);
+    }
 }
