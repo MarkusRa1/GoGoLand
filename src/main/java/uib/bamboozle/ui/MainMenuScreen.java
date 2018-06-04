@@ -120,7 +120,6 @@ public class MainMenuScreen extends Menu implements Screen {
         Gdx.app.exit();
     }
     public void settings() {
-        
         game.setScreen(game.getSettingsScreen());
     }
     public void newGame() {
