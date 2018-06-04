@@ -24,14 +24,18 @@ public class SettingsScreen extends Menu implements Screen {
     private final String UP = "buttons/up.png";
     private final String DOWN = "buttons/down.png";
     private final String LIGHT = "buttons/button_ball-light-intensity.png";
-    
+    private final String TOGGLELED = "buttons/button_toggle-led.png";
+    private final String CALIBRATE = "buttons/button_reset-heading.png";
+
     
     Table colorButtons;
     Table lightButtons;
+    Table calibrateButtons;
 
     private Array<Button> buttons;
     private Array<Button> clrButtons;
     private Array<Button> litButtons;
+    private Array<Button> calButtons;
 
     public SettingsScreen(Game game) {
         super(game);
@@ -42,18 +46,22 @@ public class SettingsScreen extends Menu implements Screen {
         
         lightButtons = new Table();
         lightButtons.setFillParent(true);
-        
+
+        calibrateButtons = new Table();
+        calibrateButtons.setFillParent(true);
+
         createButtons();
         stage.addActor(table);
         stage.addActor(colorButtons);
         stage.addActor(lightButtons);
-
+        stage.addActor(calibrateButtons);
 
     }
     public void createButtons() {
     	clrButtons = new Array<Button>();
         buttons = new Array<Button>();
         litButtons = new Array<Button>();
+        calButtons = new Array<Button>();
         
         buttons.add(createButton(RETURN, this::returnToMainMenu));
         table.pad(50);
@@ -74,20 +82,29 @@ public class SettingsScreen extends Menu implements Screen {
         	colorButtons.add(button).width((float) (100)).height(100).pad(5);
         	colorButtons.row();
         }
-        
+
         lightButtons.pad(50);
         lightButtons.add(createButton(LIGHT, null));
         lightButtons.row();
         litButtons.add(createButton(UP, this::increaseLight));
         litButtons.add(createButton(DOWN, this::decreaseLight));
         for(Button button : litButtons) {
-        	lightButtons.add(button).width(150).height(150);
-        	lightButtons.row();
+            lightButtons.add(button).width(150).height(150);
+            lightButtons.row();
+        }
+
+        calibrateButtons.pad(50);
+        calButtons.add(createButton(TOGGLELED, this::toggleLED));
+        calButtons.add(createButton(CALIBRATE, this::calibrate));
+        for(Button button : calButtons) {
+            calibrateButtons.add(button).width((float) (button.getWidth() / 2)).height((float) (button.getHeight() / 2)).pad(5);
+            calibrateButtons.row();
         }
         
-        table.center();
+        table.setPosition(0, -350);
         colorButtons.setPosition(-400, 0);
         lightButtons.setPosition(400, 65);
+        calibrateButtons.setPosition(0, 0);
         
     }
     @Override
@@ -121,6 +138,12 @@ public class SettingsScreen extends Menu implements Screen {
     }
     public void decreaseLight() {
     	//TODO inserted by Sturle
+    }
+    public void toggleLED() {
+
+    }
+    public void calibrate() {
+
     }
     @Override
     public void show() {
