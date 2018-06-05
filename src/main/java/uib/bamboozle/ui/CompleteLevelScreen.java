@@ -71,4 +71,8 @@ public class CompleteLevelScreen extends Menu {
     public void nextLevel() {
         game.nextLevel();
     }
+
+    public String getTrackName() {
+        return "mainmenumusic.wav";
+    }
 }
