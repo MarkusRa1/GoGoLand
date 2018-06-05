@@ -162,9 +162,9 @@ public class ReadFromGo implements Runnable {
         if (available(preferredPort)) {
             ProcessBuilder ps;
             if (comPort != "")
-                ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", comPort, "" + preferredPort);
+                ps = new ProcessBuilder("src/main/go/spheroController.exe", comPort, "" + preferredPort);
             else
-                ps = new ProcessBuilder("go", "run", "src/main/go/spheroController.go", "" + preferredPort);
+                ps = new ProcessBuilder("src/main/go/spheroController.exe", "" + preferredPort);
             ps.redirectErrorStream(true);
             goProc = ps.start();
             System.out.println("Started Go");
