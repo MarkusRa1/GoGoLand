@@ -27,7 +27,6 @@ public class Graphics {
     private btDiscreteDynamicsWorld dynamicsWorld;
     private ModelFactory modelFactory;
     private Renderer renderer;
-    private AudioManager audioManager;
 
     /**
      * Initializes libgdx and jBullet
@@ -56,9 +55,6 @@ public class Graphics {
 
         modelFactory = createModels();
         renderer = new Renderer(cam, environment, modelBatch);
-
-        audioManager = new AudioManager();
-        audioManager.preloadTracks("level1music.wav", "level2music.wav");
     }
 
     /**
@@ -86,26 +82,6 @@ public class Graphics {
         ModelBuilder modelBuilder = new ModelBuilder();
         ModelFactory factory = new ModelFactory();
         ModelLoader loader = new ObjLoader();
-
-        modelBuilder.begin();
-
-        Node node1 = modelBuilder.node();
-        node1.id = "cone";
-        node1.translation.set(3, 1.5f, -3);
-        modelBuilder.part("cone", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, new Material(ColorAttribute.createDiffuse(Color.GREEN)))
-                .cone(2f,2f,2f,16);
-
-        Node node2 = modelBuilder.node();
-        node2.id = "box";
-        node2.translation.set(0, 0, 0);
-        modelBuilder.part("box", GL20.GL_TRIANGLES, VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates, new Material(ColorAttribute.createDiffuse(Color.RED)))
-                .box(10f,1f,10f);
-
-        modelBuilder.node().translation.set(-3, 0.5f, -3);
-        Model treeModel = loader.loadModel(Gdx.files.internal("LowPolyTree.obj"));
-        modelBuilder.part("tree", treeModel.meshes.first(), GL20.GL_TRIANGLES, new Material(ColorAttribute.createDiffuse(Color.BLUE)));
-
-        factory.add("cube", modelBuilder.end(), null);
 
         Model level1 = loader.loadModel(Gdx.files.internal("level1.obj"));
         factory.add("level1", level1, null);
@@ -136,9 +112,5 @@ public class Graphics {
 
     public ModelFactory getModelFactory() {
         return modelFactory;
-    }
-
-    public AudioManager getAudioManager() {
-        return audioManager;
     }
 }
