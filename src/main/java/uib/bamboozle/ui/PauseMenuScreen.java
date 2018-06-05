@@ -65,4 +65,8 @@ public class PauseMenuScreen extends Menu implements Screen {
 	public void exitToMainMenu() {
 		game.setScreen(game.getMainMenuScreen());
 	}
+
+	public String getTrackName() {
+		return "level2music.wav";
+	}
 }

@@ -155,16 +155,8 @@ public class MainMenuScreen extends Menu implements Screen {
             game.getReader().setComPort(portField.getText());
     }
 
-    @Override
-    public void show() {
-        game.getAudioManager().loopTrack("level2music.wav");
-        super.show();
-    }
-
-    @Override
-    public void hide() {
-        game.getAudioManager().stopTrack("level2music.wav");
-        super.hide();
+    public String getTrackName() {
+        return "level2music.wav";
     }
 
 }

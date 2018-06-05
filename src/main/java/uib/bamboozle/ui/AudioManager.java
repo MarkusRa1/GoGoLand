@@ -39,9 +39,8 @@ public class AudioManager implements Disposable {
     }
 
     public void loopTrack(String name) {
-        getTrack(name).stop();
-        getTrack(name).setLooping(true);
         getTrack(name).play();
+        getTrack(name).setLooping(true);
     }
 
     public void pauseAll() {
@@ -66,5 +65,9 @@ public class AudioManager implements Disposable {
 
     public void setVolume(String name, float vol) {
         getTrack(name).setVolume(vol);
+    }
+
+    public void pauseTrack(String name) {
+        getTrack(name).pause();
     }
 }

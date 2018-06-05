@@ -80,4 +80,8 @@ public class CompleteGameScreen extends Menu {
     public void mainMenu() {
         game.setScreen(game.getMainMenuScreen());
     }
+
+    public String getTrackName() {
+        return "level2music.wav";
+    }
 }
