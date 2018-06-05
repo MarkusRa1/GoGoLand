@@ -162,13 +162,13 @@ public class MainMenuScreen extends Menu implements Screen {
 
     @Override
     public void show() {
-        game.getAudioManager().loopTrack("level2music.wav");
+        game.getAudioManager().loopTrack("mainmenumusic.wav");
         super.show();
     }
 
     @Override
     public void hide() {
-        game.getAudioManager().stopTrack("level2music.wav");
+        game.getAudioManager().stopTrack("mainmenumusic.wav");
         super.hide();
     }
 
