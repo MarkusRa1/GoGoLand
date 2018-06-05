@@ -39,12 +39,13 @@ public abstract class Menu implements Screen {
     @Override
     public void hide() {
         Gdx.input.setInputProcessor(null);
-
+        game.getAudioManager().pauseTrack(getTrackName());
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+        game.getAudioManager().loopTrack(getTrackName());
     }
 
     public void resize(int width, int height) {
@@ -159,4 +160,6 @@ public abstract class Menu implements Screen {
     @Override
     public void resume() {
     }
+
+    public abstract String getTrackName();
 }

@@ -145,16 +145,8 @@ public class SettingsScreen extends Menu implements Screen {
     public void calibrate() {
         game.getReader().calibrate();
     }
-    @Override
-    public void show() {
-        game.getAudioManager().loopTrack("level2music.wav");
-        super.show();
-    }
 
-    @Override
-    public void hide() {
-        game.getAudioManager().stopTrack("level2music.wav");
-        super.hide();
+    public String getTrackName() {
+        return "mainmenumusic.wav";
     }
-
 }

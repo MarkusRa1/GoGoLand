@@ -23,6 +23,7 @@ import uib.bamboozle.Game;
 
 public class CompleteLevelScreen extends Menu {
     private static final String BACKGROUND = "Background/bg4.png";
+    private static final String COMPLETE = "buttons/button_level-complete.png";
     private static final String NEXT = "buttons/button_next-level.png";
 
     private Table table;
@@ -46,10 +47,12 @@ public class CompleteLevelScreen extends Menu {
     }
 
     private void createButtons() {
+        Button completeSign = createButton(COMPLETE, null);
         Array<Button> buttons = new Array<>();
 
         buttons.add(createButton(NEXT, this::nextLevel));
 
+        table.add(completeSign).pad(0, 0, 200, 0);
         table.center();
         table.row();
         for (Button but : buttons) {
@@ -67,5 +70,9 @@ public class CompleteLevelScreen extends Menu {
 
     public void nextLevel() {
         game.nextLevel();
+    }
+
+    public String getTrackName() {
+        return "mainmenumusic.wav";
     }
 }

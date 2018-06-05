@@ -14,6 +14,8 @@ public class Game extends com.badlogic.gdx.Game {
     private GameScreen gameScreen;
     private PauseMenuScreen pauseMenuScreen;
     private SettingsScreen settingsScreen;
+    private CompleteLevelScreen completeLevelScreen;
+    private CompleteGameScreen completeGameScreen;
     private Thread readerThread;
 
     private AudioManager audioManager = new AudioManager();
@@ -47,11 +49,13 @@ public class Game extends com.badlogic.gdx.Game {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        audioManager.preloadTracks("level1music.wav", "level2music.wav");
+        audioManager.preloadTracks("midlevelmusic.wav", "firstlevelmusic.wav", "finallevelmusic.wav", "mainmenumusic.wav");
 
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
         settingsScreen = new SettingsScreen(this);
+        completeLevelScreen = new CompleteLevelScreen(this);
+        completeGameScreen = new CompleteGameScreen(this);
 
         setScreen(mainMenuScreen);
     }
@@ -178,11 +182,12 @@ public class Game extends com.badlogic.gdx.Game {
     }
 
     public void levelComplete() {
-        // if(gameScreen.getLevelNumber() != GameScreen.NUM_LEVELS) {
-        setScreen(new CompleteLevelScreen(this));
-        // } else {
-
-        // }
+        if(gameScreen.getLevelNumber() != GameScreen.NUM_LEVELS) {
+            setScreen(completeLevelScreen);
+        } else {
+            newGame();
+            setScreen(completeGameScreen);
+        }
     }
 
     public void nextLevel() {

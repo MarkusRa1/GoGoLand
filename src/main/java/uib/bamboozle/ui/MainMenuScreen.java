@@ -53,14 +53,9 @@ public class MainMenuScreen extends Menu implements Screen {
         
         //parallax background, for more advanced add pictures to Background and loop them
         parallaxBackground();
-        
+
         //BB8 animation
-        Array<TextureRegion> bb8footage = new Array<TextureRegion>();
-        for(int i = 0; i<=22 ; i ++) {
-        	bb8footage.add(new TextureRegion(new Texture(Gdx.files.internal("bb8/" + i +".png"))));
-        }
-        Animation<TextureRegion> bb8Animate = new Animation<TextureRegion>(0.0001f , bb8footage, PlayMode.LOOP);
-        AnimatedActor bb8 = new AnimatedActor(bb8Animate);
+        AnimatedActor bb8 = BB8.make();
         bb8.setPosition(350, 150);
         getStage().addActor(bb8);
 
@@ -160,16 +155,7 @@ public class MainMenuScreen extends Menu implements Screen {
             game.getReader().setComPort(portField.getText());
     }
 
-    @Override
-    public void show() {
-        game.getAudioManager().loopTrack("level2music.wav");
-        super.show();
+    public String getTrackName() {
+        return "mainmenumusic.wav";
     }
-
-    @Override
-    public void hide() {
-        game.getAudioManager().stopTrack("level2music.wav");
-        super.hide();
-    }
-
 }
