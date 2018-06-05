@@ -16,19 +16,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
 import uib.bamboozle.Game;
 
-public class CompleteLevelScreen extends Menu {
+public class CompleteGameScreen extends Menu {
     private static final String BACKGROUND = "Background/bg4.png";
-    private static final String COMPLETE = "buttons/button_level-complete.png";
-    private static final String NEXT = "buttons/button_next-level.png";
+    private static final String COMPLETE = "buttons/button_game-complete.png";
+    private static final String MAIN = "buttons/button_main-menu.png";
 
     private Table table;
 
-    public CompleteLevelScreen(Game game) {
+    public CompleteGameScreen(Game game) {
         super(game);
         table = new Table();
 
@@ -48,9 +49,11 @@ public class CompleteLevelScreen extends Menu {
 
     private void createButtons() {
         Button completeSign = createButton(COMPLETE, null);
+        ImageButton congrats =
+
         Array<Button> buttons = new Array<>();
 
-        buttons.add(createButton(NEXT, this::nextLevel));
+        buttons.add(createButton(MAIN, this::mainMenu));
 
         table.add(completeSign).pad(0, 0, 200, 0);
         table.center();
@@ -68,7 +71,7 @@ public class CompleteLevelScreen extends Menu {
         stage.draw();
     }
 
-    public void nextLevel() {
-        game.nextLevel();
+    public void mainMenu() {
+        game.setScreen(game.getMainMenuScreen());
     }
 }
