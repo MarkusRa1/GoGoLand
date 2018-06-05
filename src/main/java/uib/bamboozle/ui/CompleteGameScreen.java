@@ -26,6 +26,7 @@ public class CompleteGameScreen extends Menu {
     private static final String BACKGROUND = "Background/bg4.png";
     private static final String COMPLETE = "buttons/button_game-complete.png";
     private static final String MAIN = "buttons/button_main-menu.png";
+    private static final String CONGRATS = "congratulations.gif";
 
     private Table table;
 
@@ -36,6 +37,10 @@ public class CompleteGameScreen extends Menu {
         setupBackground();
 
         createButtons();
+
+        AnimatedActor bb8 = BB8.make();
+        bb8.setPosition(350, 250);
+        getStage().addActor(bb8);
 
         table.setFillParent(true);
         getStage().addActor(table);;
@@ -49,13 +54,14 @@ public class CompleteGameScreen extends Menu {
 
     private void createButtons() {
         Button completeSign = createButton(COMPLETE, null);
-        ImageButton congrats =
+        ImageButton congrats = createButton(CONGRATS, null);
+        congrats.getImage().setScale(2);
 
         Array<Button> buttons = new Array<>();
 
         buttons.add(createButton(MAIN, this::mainMenu));
 
-        table.add(completeSign).pad(0, 0, 200, 0);
+        table.add(completeSign).pad(0, 0, 300, 0);
         table.center();
         table.row();
         for (Button but : buttons) {
