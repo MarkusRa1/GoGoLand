@@ -54,6 +54,6 @@ public class Level1 extends Level {
     }
 
     public String getTrackName() {
-        return "level1music.wav";
+        return "firstlevelmusic.wav";
     }
 }

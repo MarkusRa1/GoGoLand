@@ -49,7 +49,8 @@ public class Game extends com.badlogic.gdx.Game {
         batch = new SpriteBatch();
         font = new BitmapFont();
 
-        audioManager.preloadTracks("level1music.wav", "level2music.wav");
+        audioManager.preloadTracks("middlelevelmusic.wav", "firstlevelmusic.wav", "finallevelmusic.wav", "mainmenumusic.wav",
+               "level1music.wav" ,"level2music.wav");
 
         mainMenuScreen = new MainMenuScreen(this);
         pauseMenuScreen = new PauseMenuScreen(this);
