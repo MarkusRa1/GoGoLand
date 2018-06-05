@@ -73,6 +73,6 @@ public class CompleteLevelScreen extends Menu {
     }
 
     public String getTrackName() {
-        return "level2music.wav";
+        return "mainmenumusic.wav";
     }
 }

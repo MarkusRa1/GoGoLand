@@ -156,7 +156,6 @@ public class MainMenuScreen extends Menu implements Screen {
     }
 
     public String getTrackName() {
-        return "level2music.wav";
+        return "mainmenumusic.wav";
     }
-
 }
