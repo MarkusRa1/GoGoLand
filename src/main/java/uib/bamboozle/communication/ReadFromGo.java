@@ -289,6 +289,8 @@ public class ReadFromGo implements Runnable {
     }
 
     private void stopGoProcess() {
+        if (tcpConnected && tcpSocket != null)
+            writeToServer("Stop\n");
         if (goProcHandler != null)
             goProcHandler.interrupt();
         if (goProc != null) {
