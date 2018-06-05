@@ -222,57 +222,60 @@ func feedBack() {
 	}
 	for !stop {
 		message, err := bufio.NewReader(tcpconn).ReadString('\n')
-		if err != nil || strings.Compare(message, "Stop\n") == 0 {
-			if dontCloseWhenJavaClose {
-				lostConnection = true
-				tcpConnected = false
-				fmt.Println("Reconnecting Application...")
-				tcpConnect()
-				lostConnection = false;
-			} else {
-				stop = true
-				if err != nil {
-					fmt.Println("Error received:", err.Error())
-				}
-			}
+		if err != nil {
+			handleFeedback(message, err)
+		} else {
+			go handleFeedback(message, err)
 		}
+	}
+}
 
-		fmt.Println(message)
-		if strings.Compare(message, "Connect\n") == 0 {
+func handleFeedback(message string, err error) {
+	if err != nil || strings.Compare(message, "Stop\n") == 0 {
+		if dontCloseWhenJavaClose {
+			lostConnection = true
+			tcpConnected = false
+			fmt.Println("Reconnecting Application...")
 			os.Exit(100) // Temporary
-			if spheroConnectedOrTrying {
-				incomingCommand<-SpheroCommand{"Connect", 0, 0, 0}
-				<-readyToRestartSpheroConnection
+			tcpConnect()
+			lostConnection = false;
+		} else {
+			stop = true
+			if err != nil {
+				fmt.Println("Error received:", err.Error())
 			}
-			go sendData()
+			os.Exit(100) // Temporary
 		}
-		if strings.HasPrefix(message, "COM") {
-			comPort = strings.Trim(message, "\n")
-			waitForCOMPort<-true
+	} else if strings.Compare(message, "Connect\n") == 0 {
+		os.Exit(100) // Temporary
+		if spheroConnectedOrTrying {
+			incomingCommand<-SpheroCommand{"Connect", 0, 0, 0}
+			<-readyToRestartSpheroConnection
 		}
-		if strings.Compare(message, "Calibrate on\n") == 0 {
-			incomingCommand<-SpheroCommand{"Calibrate", 255, 0, 0}
-		}
-		if strings.Compare(message, "Calibrate off\n") == 0 {
-			incomingCommand<-SpheroCommand{"Calibrate", 0, 0, 0}
-		}
-		if strings.Compare(message, "ToggleHeading\n") == 0 {
-			incomingCommand<-SpheroCommand{"ToggleHeading", 0, 0, 0}
-		}
-		if strings.HasPrefix(message, "setRGB") {
-			fmt.Println(message[:(len(message)-1)])
-			colours := strings.Split(message[:(len(message)-1)], " ")
-			r, _ := strconv.Atoi(colours[1])
-			g, _ := strconv.Atoi(colours[2])
-			b, _ := strconv.Atoi(colours[3])
-			incomingCommand<-SpheroCommand{"setRGB", r, g, b}
-		}
-		if strings.HasPrefix(message, "increaseBrightness") {
-			incomingCommand<-SpheroCommand{"increaseBrightness", 0, 0, 0}
-		}
-		if strings.HasPrefix(message, "decreaseBrightness") {
-			incomingCommand<-SpheroCommand{"decreaseBrightness", 0, 0, 0}
-		}
+		go sendData()
+	} else if strings.HasPrefix(message, "COM") {
+		comPort = strings.Trim(message, "\n")
+		waitForCOMPort<-true
+	} else if strings.Compare(message, "Calibrate on\n") == 0 {
+		incomingCommand<-SpheroCommand{"Calibrate", 255, 0, 0}
+	} else if strings.Compare(message, "Calibrate off\n") == 0 {
+		incomingCommand<-SpheroCommand{"Calibrate", 0, 0, 0}
+	} else if strings.Compare(message, "ToggleHeading\n") == 0 {
+		incomingCommand<-SpheroCommand{"ToggleHeading", 0, 0, 0}
+	} else if strings.HasPrefix(message, "setRGB") {
+		fmt.Println(message[:(len(message)-1)])
+		colours := strings.Split(message[:(len(message)-1)], " ")
+		r, _ := strconv.Atoi(colours[1])
+		g, _ := strconv.Atoi(colours[2])
+		b, _ := strconv.Atoi(colours[3])
+		incomingCommand<-SpheroCommand{"setRGB", r, g, b}
+	} else if strings.HasPrefix(message, "increaseBrightness") {
+		incomingCommand<-SpheroCommand{"increaseBrightness", 0, 0, 0}
+	} else if strings.HasPrefix(message, "decreaseBrightness") {
+		incomingCommand<-SpheroCommand{"decreaseBrightness", 0, 0, 0}
+	} else {
+		fmt.Println("Unknown Command: " + message)
+		os.Exit(100)
 	}
 }
 
